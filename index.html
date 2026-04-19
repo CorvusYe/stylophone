@@ -461,8 +461,9 @@ calculateKeyPositions() {
 this.keyPositions = [];
 // 总范围是0到12
 this.totalWidth = 12;
-// 下排键（白键/自然音）：按照钢琴布局 C, D, E, F, G, A, B, C, D, E, F, G, A
-// 13个键，从0到12
+// 下排键（白键/自然音）：从左到右C, D, E, F, G, A, B, C, D, E, F, G, A
+// 按照钢琴键盘，每个白键对应一个半音位置
+// 从C4开始（中央C）
 const bottomNotePositions = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21];
 const bottomNoteNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'A'];
 for (let i = 0; i < 13; i++) {
@@ -474,7 +475,7 @@ left: i / this.totalWidth,
 width: 1 / this.totalWidth,
 top: 0.05,
 height: 0.9,
-position: bottomNotePositions[i] // 半音位置，0=C3，1=C#3，2=D3，...
+position: bottomNotePositions[i] // 半音位置，0=C4
 });
 }
 // 上排键（黑键/升调）：0.5-1.5=C#, 2.5-3.5=D#, 3.5-4.5=F#, 5.5-6.5=G#, 6.5-7.5=A#, 7.5-8.5=C#, 9.5-10.5=D#, 10.5-11.5=F#
@@ -581,8 +582,8 @@ position = key.position; // 使用键的位置属性（半音数）
 break;
 }
 }
-// 0对应C3 (130.81 Hz)，每个半音是2^(1/12)倍
-const baseFreq = 130.81; // C3
+// 0对应C4（中央C，261.63 Hz），每个半音是2^(1/12)倍
+const baseFreq = 261.63; // C4
 return baseFreq * Math.pow(2, (position / 12) + this.octave);
 }
  
