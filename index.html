@@ -364,6 +364,11 @@ box-shadow: 0 0 8px rgba(153, 51, 255, 0.6);
 <button class="vib-btn" id="vibBtn">VIB</button>
 </div>
  
+<div class="vib-switch-container">
+<span class="vib-label">Sustain</span>
+<button class="vib-btn" id="sustainBtn">SUS</button>
+</div>
+ 
 <div class="right-controls">
 <div class="octave-switch">
 <button class="octave-btn" data-octave="-1">Low</button>
@@ -400,6 +405,7 @@ this.octave = 0;
 this.powerOn = true;
 this.handedness = 'left';
 this.vibratoOn = false;
+this.sustainOn = false;
 this.stylusBaseX = window.innerWidth / 2;
 this.stylusBaseY = 50;
 this.mouseX = window.innerWidth / 2;
@@ -652,6 +658,11 @@ this.vibratoOn = !this.vibratoOn;
 e.target.classList.toggle('active', this.vibratoOn);
 });
  
+document.getElementById('sustainBtn').addEventListener('click', (e) => {
+this.sustainOn = !this.sustainOn;
+e.target.classList.toggle('active', this.sustainOn);
+});
+ 
 document.addEventListener('click', () => this.initAudio(), { once: true });
 document.addEventListener('touchstart', () => this.initAudio(), { once: true });
 }
@@ -894,13 +905,15 @@ this.showNote(displayNote);
  
 stopOscillator() {
 if (this.oscillator && this.gainNode) {
-this.gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.1);
-this.oscillator.stop(this.audioContext.currentTime + 0.1);
+const fadeTime = this.sustainOn ? 1.0 : 0.1; // 延音时1秒淡出，否则0.1秒
+this.gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + fadeTime);
+this.oscillator.stop(this.audioContext.currentTime + fadeTime);
 this.oscillator = null;
 this.gainNode = null;
 }
 if (this.vibratoOscillator && this.vibratoGain) {
-this.vibratoOscillator.stop(this.audioContext.currentTime + 0.1);
+const fadeTime = this.sustainOn ? 1.0 : 0.1;
+this.vibratoOscillator.stop(this.audioContext.currentTime + fadeTime);
 this.vibratoOscillator = null;
 this.vibratoGain = null;
 }
