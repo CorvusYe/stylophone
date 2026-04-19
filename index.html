@@ -461,35 +461,38 @@ calculateKeyPositions() {
 this.keyPositions = [];
 // 总范围是0到11.5
 this.totalWidth = 11.5;
-// 下排键：从0到11连续排列（12个键），延伸到整个高度
+// 下排键（白键/自然音）：按照钢琴布局 C, D, E, F, G, A, B, C, D, E, F, G
+const bottomNotePositions = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19];
+const bottomNoteNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
 for (let i = 0; i < 12; i++) {
 this.keyPositions.push({
-noteIndex: i,
+noteIndex: bottomNotePositions[i],
+noteName: bottomNoteNames[i],
 type: 'bottom',
 left: i / this.totalWidth,
 width: 1 / this.totalWidth,
 top: 0.05,
 height: 0.9,
-position: i // 音调位置
+position: bottomNotePositions[i] // 半音位置，0=C3，1=C#3，2=D3，...
 });
 }
-// 上排键：0.5-1.5，2.5-3.5，3.5-4.5，5.5-6.5，6.5-7.5，7.5-8.5，9.5-10.5，10.5-11.5
-// 后添加，覆盖在上面
+// 上排键（黑键/升调）：0.5-1.5=C#, 2.5-3.5=D#, 3.5-4.5=F#, 5.5-6.5=G#, 6.5-7.5=A#, 7.5-8.5=C#, 9.5-10.5=D#, 10.5-11.5=F#
 const topKeyPositions = [
-{start: 0.5, end: 1.5, position: 1.0},
-{start: 2.5, end: 3.5, position: 3.0},
-{start: 3.5, end: 4.5, position: 4.0},
-{start: 5.5, end: 6.5, position: 6.0},
-{start: 6.5, end: 7.5, position: 7.0},
-{start: 7.5, end: 8.5, position: 8.0},
-{start: 9.5, end: 10.5, position: 10.0},
-{start: 10.5, end: 11.5, position: 11.0}
+{start: 0.5, end: 1.5, position: 1, noteName: 'C#'},
+{start: 2.5, end: 3.5, position: 3, noteName: 'D#'},
+{start: 3.5, end: 4.5, position: 6, noteName: 'F#'},
+{start: 5.5, end: 6.5, position: 8, noteName: 'G#'},
+{start: 6.5, end: 7.5, position: 10, noteName: 'A#'},
+{start: 7.5, end: 8.5, position: 13, noteName: 'C#'},
+{start: 9.5, end: 10.5, position: 15, noteName: 'D#'},
+{start: 10.5, end: 11.5, position: 18, noteName: 'F#'}
 ];
 for (let i = 0; i < topKeyPositions.length; i++) {
 const key = topKeyPositions[i];
 const width = (key.end - key.start) / this.totalWidth;
 this.keyPositions.push({
-noteIndex: 12 + i,
+noteIndex: key.position,
+noteName: key.noteName,
 type: 'top',
 left: key.start / this.totalWidth,
 width: width,
@@ -573,12 +576,11 @@ let position = 0;
 // 找到这个noteIndex对应的键位置
 for (let key of this.keyPositions) {
 if (key.noteIndex === noteIndex) {
-position = key.position; // 使用键的位置属性
+position = key.position; // 使用键的位置属性（半音数）
 break;
 }
 }
-// 音调是线性的，从左到右逐渐升高
-// 0对应C3，11对应B3
+// 0对应C3 (130.81 Hz)，每个半音是2^(1/12)倍
 const baseFreq = 130.81; // C3
 return baseFreq * Math.pow(2, (position / 12) + this.octave);
 }
@@ -818,6 +820,16 @@ this.ctx.strokeRect(0, 0, width, height);
 playNote(noteIndex) {
 if (!this.audioContext) return;
 this.stopOscillator();
+// 找到这个noteIndex对应的键
+let noteName = '';
+let position = 0;
+for (let key of this.keyPositions) {
+if (key.noteIndex === noteIndex) {
+noteName = key.noteName;
+position = key.position;
+break;
+}
+}
 this.oscillator = this.audioContext.createOscillator();
 this.gainNode = this.audioContext.createGain();
 // 经典Stylophone使用方形波
@@ -844,7 +856,9 @@ this.gainNode.connect(this.audioContext.destination);
 this.gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
 this.gainNode.gain.linearRampToValueAtTime(0.25, this.audioContext.currentTime + 0.03);
 this.oscillator.start();
-this.showNote(this.noteNames[noteIndex % 12] + (3 + Math.floor(noteIndex / 12) + this.octave));
+// 计算八度：position 0-11是3，12-23是4
+const octave = 3 + Math.floor(position / 12) + this.octave;
+this.showNote(noteName + octave);
 }
  
 stopOscillator() {
