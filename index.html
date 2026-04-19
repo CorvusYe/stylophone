@@ -74,31 +74,7 @@ font-style: italic;
 text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
  
-.switch {
-width: 35px;
-height: 15px;
-background: #333333;
-border-radius: 2px;
-position: relative;
-cursor: pointer;
-border: 1px solid #444444;
-}
  
-.switch::after {
-content: '';
-position: absolute;
-top: 2px;
-left: 2px;
-width: 14px;
-height: 11px;
-background: linear-gradient(180deg, #ff6600 0%, #cc4400 100%);
-border-radius: 1px;
-transition: transform 0.15s;
-}
- 
-.switch.on::after {
-transform: translateX(17px);
-}
  
 .keyboard-area {
 background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);
@@ -186,15 +162,6 @@ color: #ffffff;
 display: flex;
 flex-direction: column;
 align-items: center;
-}
- 
-.power-labels {
-display: flex;
-gap: 10px;
-margin-top: 4px;
-font-size: 9px;
-color: #aaaaaa;
-font-weight: bold;
 }
  
 .right-controls {
@@ -344,10 +311,9 @@ box-shadow: 0 0 8px rgba(153, 51, 255, 0.6);
 <div class="controls-bar">
 <div class="left-controls">
 <div class="power-switch">
-<div class="switch on" id="powerSwitch"></div>
-<div class="power-labels">
-<span>OFF</span>
-<span>ON</span>
+<div class="hand-switch">
+<button class="hand-btn" data-power="off">OFF</button>
+<button class="hand-btn active" data-power="on">ON</button>
 </div>
 </div>
 </div>
@@ -690,20 +656,25 @@ btn.classList.add('active');
 this.octave = parseInt(btn.dataset.octave);
 });
 });
-document.querySelectorAll('.hand-btn').forEach(btn => {
+// 处理手切换按钮
+document.querySelectorAll('[data-hand]').forEach(btn => {
 btn.addEventListener('click', () => {
-document.querySelectorAll('.hand-btn').forEach(b => b.classList.remove('active'));
+document.querySelectorAll('[data-hand]').forEach(b => b.classList.remove('active'));
 btn.classList.add('active');
 this.handedness = btn.dataset.hand;
 this.updateStylusBase();
 });
 });
-document.getElementById('powerSwitch').addEventListener('click', (e) => {
-e.target.classList.toggle('on');
-this.powerOn = e.target.classList.contains('on');
+// 处理电源开关按钮
+document.querySelectorAll('[data-power]').forEach(btn => {
+btn.addEventListener('click', () => {
+document.querySelectorAll('[data-power]').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+this.powerOn = btn.dataset.power === 'on';
 if (!this.powerOn && this.isPlaying) {
 this.stopOscillator();
 }
+});
 });
  
 document.getElementById('vibBtn').addEventListener('click', (e) => {
