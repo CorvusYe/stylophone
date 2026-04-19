@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>半岛铁盒</title>
+<title>Stylophone GEN X-2</title>
 <style>
 * {
 margin: 0;
@@ -19,64 +19,261 @@ align-items: center;
 justify-content: center;
 font-family: 'Courier New', monospace;
 overflow: hidden;
-padding: 40px;
+padding: 20px;
 }
  
-.container {
+.stylophone-container {
 width: 100%;
-max-width: 1200px;
-aspect-ratio: 16/10;
-background: linear-gradient(180deg, #8B4513 0%, #654321 50%, #4a3728 100%);
-border-radius: 12px;
+max-width: 700px;
+background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 50%, #1e3a8a 100%);
+border-radius: 15px;
 box-shadow: 
 0 20px 60px rgba(0, 0, 0, 0.6),
 inset 0 2px 4px rgba(255, 255, 255, 0.1);
 position: relative;
-overflow: hidden;
+padding: 20px;
+aspect-ratio: 4/3;
 }
  
-.tines-container {
+.top-section {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 15px;
+}
+ 
+.brand {
+color: #ffffff;
+font-size: 28px;
+font-weight: bold;
+text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+letter-spacing: 2px;
+}
+ 
+.model {
+color: #fbbf24;
+font-size: 18px;
+font-weight: bold;
+text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+ 
+.speaker {
+width: 40%;
+height: 120px;
+background: linear-gradient(180deg, #4b5563 0%, #374151 100%);
+border-radius: 5px;
+display: grid;
+grid-template-columns: repeat(8, 1fr);
+gap: 2px;
+padding: 10px;
+box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+ 
+.speaker-hole {
+width: 100%;
+height: 100%;
+background: #1f2937;
+border-radius: 50%;
+}
+ 
+.controls-panel {
+display: flex;
+gap: 10px;
+margin-bottom: 15px;
+flex-wrap: wrap;
+}
+ 
+.control-group {
+background: rgba(0, 0, 0, 0.2);
+padding: 8px 12px;
+border-radius: 5px;
+}
+ 
+.control-label {
+color: #ffffff;
+font-size: 10px;
+margin-bottom: 5px;
+text-align: center;
+}
+ 
+.knobs {
+display: flex;
+gap: 10px;
+}
+ 
+.knob {
+width: 28px;
+height: 28px;
+background: linear-gradient(145deg, #374151 0%, #1f2937 100%);
+border-radius: 50%;
+border: 2px solid #4b5563;
+cursor: pointer;
+position: relative;
+}
+ 
+.knob::after {
+content: '';
+position: absolute;
+top: 4px;
+left: 50%;
+transform: translateX(-50%);
+width: 2px;
+height: 10px;
+background: #fbbf24;
+}
+ 
+.switch {
+width: 20px;
+height: 12px;
+background: #374151;
+border-radius: 3px;
+position: relative;
+cursor: pointer;
+}
+ 
+.switch::after {
+content: '';
+position: absolute;
+top: 1px;
+left: 1px;
+width: 8px;
+height: 10px;
+background: #fbbf24;
+border-radius: 2px;
+transition: transform 0.2s;
+}
+ 
+.switch.on::after {
+transform: translateX(10px);
+}
+ 
+.stylus-holder {
+width: 100%;
+height: 30px;
+background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
+border-radius: 5px;
+margin-bottom: 10px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: #fbbf24;
+font-size: 12px;
+font-weight: bold;
+box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+ 
+.keyboard-container {
+background: linear-gradient(180deg, #e5e7eb 0%, #d1d5db 100%);
+border-radius: 8px;
+padding: 15px;
+box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+ 
+.keyboard {
+display: flex;
+flex-direction: column;
+gap: 5px;
+}
+ 
+.key-row {
+display: flex;
+gap: 3px;
+}
+ 
+.key {
+flex: 1;
+height: 45px;
+background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
+border: 1px solid #9ca3af;
+border-radius: 3px;
+cursor: pointer;
+display: flex;
+align-items: flex-end;
+justify-content: center;
+padding-bottom: 3px;
+font-size: 8px;
+color: #6b7280;
+transition: all 0.1s;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+ 
+.key:hover {
+background: linear-gradient(180deg, #e5e7eb 0%, #d1d5db 100%);
+}
+ 
+.key.active {
+background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+border-color: #fbbf24;
+box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+ 
+.key.black {
+background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
+border-color: #374151;
+color: #9ca3af;
+}
+ 
+.key.black:hover {
+background: linear-gradient(180deg, #4b5563 0%, #374151 100%);
+}
+ 
+.key.black.active {
+background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+border-color: #fbbf24;
+}
+ 
+.bottom-controls {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-top: 10px;
+}
+ 
+.power-switch {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+ 
+.power-label {
+color: #ffffff;
+font-size: 8px;
+margin-top: 3px;
+}
+ 
+.volume-indicator {
+display: flex;
+flex-direction: column;
+align-items: center;
+color: #fbbf24;
+font-size: 12px;
+font-weight: bold;
+}
+ 
+.note-display {
 position: absolute;
 top: 50%;
 left: 50%;
 transform: translate(-50%, -50%);
-width: 90%;
-height: 80%;
+font-size: 72px;
+color: #fbbf24;
+text-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
+opacity: 0;
+pointer-events: none;
+z-index: 100;
+transition: opacity 0.2s;
 }
  
-.tine {
-position: absolute;
-background: linear-gradient(90deg, #c0c0c0, #e0e0e0, #c0c0c0);
-border-radius: 2px;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-cursor: pointer;
-transition: transform 0.1s ease;
-}
- 
-.tine:hover {
-transform: scale(1.05);
-}
- 
-.tine.playing {
-animation: vibrate 0.3s ease-out;
-}
- 
-@keyframes vibrate {
-0%, 100% { transform: translateX(0); }
-10% { transform: translateX(-3px); }
-20% { transform: translateX(3px); }
-30% { transform: translateX(-2px); }
-40% { transform: translateX(2px); }
-50% { transform: translateX(-1px); }
-60% { transform: translateX(1px); }
+.note-display.show {
+opacity: 1;
 }
  
 .stylus {
 position: fixed;
-width: 8px;
-height: 40px;
-background: linear-gradient(180deg, #333 0%, #666 50%, #333 100%);
-border-radius: 0 0 4px 4px;
+width: 6px;
+height: 50px;
+background: linear-gradient(180deg, #1f2937 0%, #374151 50%, #1f2937 100%);
+border-radius: 0 0 3px 3px;
 pointer-events: none;
 z-index: 1000;
 transform: translate(-50%, -100%);
@@ -85,127 +282,206 @@ box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
  
 .stylus-tip {
 position: absolute;
-bottom: -4px;
+bottom: -3px;
 left: 50%;
 transform: translateX(-50%);
-width: 12px;
-height: 12px;
-background: radial-gradient(circle, #ffd700 0%, #b8860b 100%);
+width: 10px;
+height: 10px;
+background: radial-gradient(circle, #fbbf24 0%, #f59e0b 100%);
 border-radius: 50%;
-box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
 }
  
-.connection-line {
-position: fixed;
-pointer-events: none;
-z-index: 999;
-stroke: #ffd700;
-stroke-width: 2;
-fill: none;
-filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5));
-}
- 
-.controls {
-position: absolute;
-bottom: 20px;
-left: 50%;
-transform: translateX(-50%);
+.octave-controls {
 display: flex;
-gap: 15px;
-z-index: 100;
+gap: 5px;
+align-items: center;
+}
+ 
+.octave-btn {
+width: 25px;
+height: 25px;
+background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
+border: 2px solid #4b5563;
+border-radius: 3px;
+color: #fbbf24;
+font-size: 10px;
+font-weight: bold;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+ 
+.octave-btn.active {
+background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+border-color: #fbbf24;
+}
+ 
+.timbre-controls {
+display: flex;
+gap: 5px;
 }
  
 .timbre-btn {
-padding: 10px 20px;
-background: linear-gradient(180deg, #5a4a3a 0%, #3a2a1a 100%);
-color: #e0d0b0;
-border: 2px solid #6a5a4a;
-border-radius: 6px;
-cursor: pointer;
-font-family: 'Courier New', monospace;
-font-size: 14px;
+width: 40px;
+height: 20px;
+background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
+border: 1px solid #4b5563;
+border-radius: 3px;
+color: #9ca3af;
+font-size: 8px;
 font-weight: bold;
-transition: all 0.2s ease;
-text-transform: uppercase;
-}
- 
-.timbre-btn:hover {
-background: linear-gradient(180deg, #7a6a5a 0%, #5a4a3a 100%);
-transform: translateY(-2px);
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+cursor: pointer;
 }
  
 .timbre-btn.active {
-background: linear-gradient(180deg, #8b7355 0%, #6b5335 100%);
-border-color: #ffd700;
-box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-}
- 
-.title {
-position: absolute;
-top: 20px;
-left: 50%;
-transform: translateX(-50%);
-color: #e0d0b0;
-font-size: 28px;
-font-weight: bold;
-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-letter-spacing: 4px;
-}
- 
-.note-indicator {
-position: absolute;
-top: 60px;
-left: 50%;
-transform: translateX(-50%);
-color: #ffd700;
-font-size: 18px;
-opacity: 0;
-transition: opacity 0.3s ease;
-text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-}
- 
-.note-indicator.show {
-opacity: 1;
+background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+border-color: #fbbf24;
+color: #1f2937;
 }
 </style>
 </head>
 <body>
-<div class="container" id="container">
-<div class="title">半岛铁盒</div>
-<div class="note-indicator" id="noteIndicator">C4</div>
-<div class="tines-container" id="tinesContainer"></div>
-<div class="controls">
-<button class="timbre-btn active" data-timbre="kalimba">半岛铁盒</button>
-<button class="timbre-btn" data-timbre="piano">钢琴</button>
-<button class="timbre-btn" data-timbre="guqin">古琴</button>
+<div class="stylophone-container" id="stylophone">
+<div class="top-section">
+<div>
+<div class="brand">Stylophone</div>
+<div class="model">GEN X-2</div>
 </div>
+<div class="speaker">
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+<div class="speaker-hole"></div>
+</div>
+</div>
+ 
+<div class="controls-panel">
+<div class="control-group">
+<div class="control-label">ENVELOPE</div>
+<div class="knobs">
+<div class="knob" title="ATTACK"></div>
+<div class="knob" title="PITCH"></div>
+<div class="knob" title="DECAY"></div>
+</div>
+</div>
+<div class="control-group">
+<div class="control-label">LFO</div>
+<div class="knobs">
+<div class="knob" title="WAVE"></div>
+<div class="knob" title="RATE"></div>
+<div class="knob" title="DEPTH"></div>
+</div>
+</div>
+<div class="control-group">
+<div class="control-label">FILTER</div>
+<div class="knobs">
+<div class="knob" title="CUTOFF"></div>
+<div class="knob" title="RES"></div>
+</div>
+</div>
+<div class="control-group">
+<div class="control-label">DELAY</div>
+<div class="knobs">
+<div class="switch" id="delaySwitch"></div>
+<div class="knob" title="TIME"></div>
+<div class="knob" title="REPEATS"></div>
+<div class="knob" title="LEVEL"></div>
+</div>
+</div>
+</div>
+ 
+<div class="stylus-holder">
+STYLUS
+</div>
+ 
+<div class="keyboard-container">
+<div class="keyboard" id="keyboard"></div>
+</div>
+ 
+<div class="bottom-controls">
+<div class="power-switch">
+<div class="switch on" id="powerSwitch"></div>
+<div class="power-label">OFF/ON</div>
+</div>
+<div class="octave-controls">
+<button class="octave-btn" data-octave="-1">-1</button>
+<button class="octave-btn active" data-octave="0">0</button>
+<button class="octave-btn" data-octave="1">+1</button>
+</div>
+<div class="timbre-controls">
+<button class="timbre-btn active" data-wave="square">SQU</button>
+<button class="timbre-btn" data-wave="triangle">TRI</button>
+<button class="timbre-btn" data-wave="sawtooth">SAW</button>
+</div>
+<div class="volume-indicator">
+VOL
+</div>
+</div>
+ 
+<div class="note-display" id="noteDisplay"></div>
 </div>
  
 <div class="stylus" id="stylus">
 <div class="stylus-tip"></div>
 </div>
-<svg class="connection-line" id="connectionLine" width="100%" height="100%">
-<line id="line"></line>
-</svg>
  
 <script>
-class KalimbaApp {
+class StylophoneApp {
 constructor() {
 this.audioContext = null;
-this.currentTimbre = 'kalimba';
-this.mouseX = window.innerWidth / 2;
-this.mouseY = window.innerHeight / 2;
-this.tines = [];
-this.isPlaying = false;
 this.oscillator = null;
 this.gainNode = null;
-this.noteIndicatorTimeout = null;
+this.isPlaying = false;
+this.currentNote = null;
+this.octave = 0;
+this.waveform = 'square';
+this.powerOn = true;
+// 24键：C3到B4（两个八度）
+this.noteNames = [
+'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B',
+'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'
+];
+this.baseFrequencies = {
+'C': 130.81, 'C#': 138.59, 'D': 146.83, 'D#': 155.56,
+'E': 164.81, 'F': 174.61, 'F#': 185.00, 'G': 196.00,
+'G#': 207.65, 'A': 220.00, 'A#': 233.08, 'B': 246.94
+};
+this.keys = [];
 this.init();
 }
  
 init() {
-this.createTines();
+this.createKeyboard();
 this.setupEventListeners();
 this.animate();
 }
@@ -219,193 +495,196 @@ this.audioContext.resume();
 }
 }
  
-createTines() {
-const container = document.getElementById('tinesContainer');
-const numTines = 15;
-for (let i = 0; i < numTines; i++) {
-const tine = document.createElement('div');
-tine.className = 'tine';
-const width = 20 + (numTines - i) * 3;
-const height = 100 + i * 15;
-const x = (i / (numTines - 1)) * 100;
-tine.style.width = `${width}px`;
-tine.style.height = `${height}px`;
-tine.style.left = `${x}%`;
-tine.style.top = '50%';
-tine.style.transform = 'translate(-50%, -50%)';
-tine.style.background = this.getTineGradient(i);
-this.tines.push({
-element: tine,
-x: x
+createKeyboard() {
+const keyboard = document.getElementById('keyboard');
+const whiteKeysRow = document.createElement('div');
+whiteKeysRow.className = 'key-row';
+const blackKeysRow = document.createElement('div');
+blackKeysRow.className = 'key-row';
+const whiteNoteIndices = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21, 23];
+const blackNoteIndices = [1, 3, 6, 8, 10, 13, 15, 18, 20, 22];
+// 创建白键
+whiteNoteIndices.forEach((noteIndex, i) => {
+const key = this.createKey(noteIndex, false);
+whiteKeysRow.appendChild(key);
+this.keys.push({ element: key, noteIndex: noteIndex, isBlack: false });
 });
-container.appendChild(tine);
-}
+// 创建黑键
+blackNoteIndices.forEach((noteIndex, i) => {
+const key = this.createKey(noteIndex, true);
+blackKeysRow.appendChild(key);
+this.keys.push({ element: key, noteIndex: noteIndex, isBlack: true });
+});
+keyboard.appendChild(blackKeysRow);
+keyboard.appendChild(whiteKeysRow);
 }
  
-getTineGradient(index) {
-const hues = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 15, 45, 75];
-const hue = hues[index % hues.length];
-return `linear-gradient(90deg, 
-hsl(${hue}, 20%, 50%) 0%, 
-hsl(${hue}, 20%, 70%) 50%, 
-hsl(${hue}, 20%, 50%) 100%)`;
+createKey(noteIndex, isBlack) {
+const key = document.createElement('div');
+key.className = 'key' + (isBlack ? ' black' : '');
+key.dataset.noteIndex = noteIndex;
+key.textContent = this.noteNames[noteIndex];
+return key;
+}
+ 
+getFrequency(noteIndex) {
+const octaveOffset = Math.floor(noteIndex / 12);
+const noteInOctave = noteIndex % 12;
+const noteName = this.noteNames[noteInOctave];
+const baseFreq = this.baseFrequencies[noteName];
+return baseFreq * Math.pow(2, octaveOffset + this.octave);
 }
  
 setupEventListeners() {
-const container = document.getElementById('container');
-container.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+const container = document.getElementById('stylophone');
 container.addEventListener('mousedown', (e) => this.handleMouseDown(e));
-container.addEventListener('mouseup', () => this.handleMouseUp());
-container.addEventListener('mouseleave', () => this.handleMouseUp());
+container.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+document.addEventListener('mouseup', () => this.handleMouseUp());
+container.addEventListener('touchstart', (e) => {
+e.preventDefault();
+const touch = e.touches[0];
+this.handleMouseDown({ clientX: touch.clientX, clientY: touch.clientY });
+}, { passive: false });
 container.addEventListener('touchmove', (e) => {
 e.preventDefault();
 const touch = e.touches[0];
 this.handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
 }, { passive: false });
-container.addEventListener('touchstart', (e) => {
-e.preventDefault();
-const touch = e.touches[0];
-this.handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
-this.handleMouseDown({ clientX: touch.clientX, clientY: touch.clientY });
-}, { passive: false });
-container.addEventListener('touchend', () => {
-this.handleMouseUp();
+document.addEventListener('touchend', () => this.handleMouseUp());
+document.querySelectorAll('.octave-btn').forEach(btn => {
+btn.addEventListener('click', () => {
+document.querySelectorAll('.octave-btn').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+this.octave = parseInt(btn.dataset.octave);
 });
- 
+});
 document.querySelectorAll('.timbre-btn').forEach(btn => {
 btn.addEventListener('click', () => {
 document.querySelectorAll('.timbre-btn').forEach(b => b.classList.remove('active'));
 btn.classList.add('active');
-this.currentTimbre = btn.dataset.timbre;
-if (this.isPlaying) {
-this.updateOscillatorType();
+this.waveform = btn.dataset.wave;
+if (this.oscillator) {
+this.oscillator.type = this.waveform;
 }
 });
 });
- 
+document.getElementById('powerSwitch').addEventListener('click', (e) => {
+e.target.classList.toggle('on');
+this.powerOn = e.target.classList.contains('on');
+if (!this.powerOn && this.isPlaying) {
+this.stopOscillator();
+}
+});
+document.getElementById('delaySwitch').addEventListener('click', (e) => {
+e.target.classList.toggle('on');
+});
 document.addEventListener('click', () => this.initAudio(), { once: true });
 document.addEventListener('touchstart', () => this.initAudio(), { once: true });
+}
+ 
+handleMouseDown(e) {
+if (!this.powerOn) return;
+this.initAudio();
+this.isPlaying = true;
+this.checkKeyHit(e.clientX, e.clientY);
 }
  
 handleMouseMove(e) {
 this.mouseX = e.clientX;
 this.mouseY = e.clientY;
 this.updateStylus();
-this.updateConnectionLine();
-if (this.isPlaying) {
-this.updateFrequency();
+if (this.isPlaying && this.powerOn) {
+this.checkKeyHit(e.clientX, e.clientY);
 }
-}
- 
-handleMouseDown(e) {
-if (!this.isPlaying) {
-this.isPlaying = true;
-this.initAudio();
-this.startOscillator();
-}
-this.updateFrequency();
 }
  
 handleMouseUp() {
 if (this.isPlaying) {
 this.stopOscillator();
 this.isPlaying = false;
+this.currentNote = null;
+this.clearActiveKeys();
 }
 }
  
-startOscillator() {
+checkKeyHit(clientX, clientY) {
+let hit = false;
+for (let keyData of this.keys) {
+const key = keyData.element;
+const rect = key.getBoundingClientRect();
+if (clientX >= rect.left && clientX <= rect.right &&
+clientY >= rect.top && clientY <= rect.bottom) {
+hit = true;
+const noteIndex = keyData.noteIndex;
+if (this.currentNote !== noteIndex) {
+this.currentNote = noteIndex;
+this.playNote(noteIndex);
+this.updateActiveKeys(key);
+}
+break;
+}
+}
+if (!hit && this.currentNote !== null) {
+this.stopOscillator();
+this.currentNote = null;
+this.clearActiveKeys();
+}
+}
+ 
+playNote(noteIndex) {
 if (!this.audioContext) return;
+this.stopOscillator();
 this.oscillator = this.audioContext.createOscillator();
 this.gainNode = this.audioContext.createGain();
+this.oscillator.type = this.waveform;
+this.oscillator.frequency.setValueAtTime(
+this.getFrequency(noteIndex),
+this.audioContext.currentTime
+);
 this.oscillator.connect(this.gainNode);
 this.gainNode.connect(this.audioContext.destination);
-this.updateOscillatorType();
-this.updateFrequency();
 this.gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-this.gainNode.gain.linearRampToValueAtTime(0.5, this.audioContext.currentTime + 0.1);
+this.gainNode.gain.linearRampToValueAtTime(0.3, this.audioContext.currentTime + 0.05);
 this.oscillator.start();
+this.showNote(this.noteNames[noteIndex % 12] + (3 + Math.floor(noteIndex / 12) + this.octave));
 }
  
 stopOscillator() {
-if (this.oscillator) {
-this.gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.3);
-this.oscillator.stop(this.audioContext.currentTime + 0.3);
+if (this.oscillator && this.gainNode) {
+this.gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.1);
+this.oscillator.stop(this.audioContext.currentTime + 0.1);
 this.oscillator = null;
 this.gainNode = null;
 }
 }
  
-updateOscillatorType() {
-if (!this.oscillator) return;
-switch (this.currentTimbre) {
-case 'kalimba':
-this.oscillator.type = 'sine';
-break;
-case 'piano':
-this.oscillator.type = 'triangle';
-break;
-case 'guqin':
-this.oscillator.type = 'sawtooth';
-break;
-}
+updateActiveKeys(activeKey) {
+this.clearActiveKeys();
+activeKey.classList.add('active');
 }
  
-updateFrequency() {
-if (!this.oscillator) return;
-const container = document.getElementById('container');
-const rect = container.getBoundingClientRect();
-const x = this.mouseX - rect.left;
-const y = this.mouseY - rect.top;
-// Calculate normalized position (0-1) from left to right
-const normalizedX = x / rect.width;
-// Map to frequency range (C2 to C7)
-const minFreq = 65.41;  // C2
-const maxFreq = 2093.00; // C7
-let frequency = minFreq + (maxFreq - minFreq) * normalizedX;
-// Adjust for guqin timbre
-if (this.currentTimbre === 'guqin') {
-frequency *= 0.5;
-}
-this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
-// Update note indicator with nearest note
-const note = this.getNearestNote(frequency);
-this.showNoteIndicator(note);
+clearActiveKeys() {
+document.querySelectorAll('.key').forEach(key => {
+key.classList.remove('active');
+});
 }
  
-getNearestNote(frequency) {
-const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const refFreq = 440; // A4
-const refNote = 49;  // A4
-const semitones = Math.round(12 * Math.log2(frequency / refFreq));
-const noteIndex = (refNote + semitones) % 12;
-const octave = Math.floor((refNote + semitones) / 12) - 1;
-return `${notes[noteIndex]}${octave}`;
-}
- 
-showNoteIndicator(note) {
-const indicator = document.getElementById('noteIndicator');
-indicator.textContent = note;
-indicator.classList.add('show');
-clearTimeout(this.noteIndicatorTimeout);
-this.noteIndicatorTimeout = setTimeout(() => indicator.classList.remove('show'), 500);
+showNote(note) {
+const display = document.getElementById('noteDisplay');
+display.textContent = note;
+display.classList.add('show');
+clearTimeout(this.noteTimeout);
+this.noteTimeout = setTimeout(() => {
+display.classList.remove('show');
+}, 300);
 }
  
 updateStylus() {
+if (this.mouseX !== undefined && this.mouseY !== undefined) {
 const stylus = document.getElementById('stylus');
-stylus.style.left = `${this.mouseX}px`;
-stylus.style.top = `${this.mouseY}px`;
+stylus.style.left = this.mouseX + 'px';
+stylus.style.top = this.mouseY + 'px';
 }
- 
-updateConnectionLine() {
-const container = document.getElementById('container');
-const containerRect = container.getBoundingClientRect();
-const containerCenterX = containerRect.left + containerRect.width / 2;
-const containerCenterY = containerRect.top + containerRect.height / 2;
-const line = document.getElementById('line');
-line.setAttribute('x1', containerCenterX);
-line.setAttribute('y1', containerCenterY);
-line.setAttribute('x2', this.mouseX);
-line.setAttribute('y2', this.mouseY);
 }
  
 animate() {
@@ -414,7 +693,7 @@ requestAnimationFrame(() => this.animate());
 }
  
 window.addEventListener('DOMContentLoaded', () => {
-new KalimbaApp();
+new StylophoneApp();
 });
 </script>
 </body>
