@@ -603,7 +603,7 @@ getFrequencyByKeyPosition(key, localX) {
 // 以键的基准音高为中心，在键范围内有轻微的线性变化
 // localX: 0-1，0=键左端，1=键右端
 const basePosition = key.position; // 键的基准半音位置
-const variationRange = 0.6; // 每个键内的音高变化范围（+/-0.3个半音）
+const variationRange = 1.0; // 每个键内的音高变化范围（+/-0.5个半音）
 const position = basePosition + (localX - 0.5) * variationRange;
 const baseFreq = 261.63; // C4
 return baseFreq * Math.pow(2, (position / 12) + this.octave);
