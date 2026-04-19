@@ -448,13 +448,14 @@ const keyboard = document.getElementById('keyboard');
 const keyRatios = [1.5, 1.5, 2.5, 2.5, 1.5, 1.5, 2.5, 2.5, 2.5, 1.5, 1.5, 1.5];
 const totalRatio = keyRatios.reduce((sum, ratio) => sum + ratio, 0);
 let currentPosition = 0;
+// 上排键：音符键
 for (let i = 0; i < 12; i++) {
 const key = this.createKey(i, currentPosition, keyRatios[i], totalRatio);
 keyboard.appendChild(key);
 this.keys.push({ element: key, noteIndex: i });
 currentPosition += keyRatios[i];
 }
-// 第二行（下排数字）
+// 下排键：数字键，偏移位置以创建错落感
 currentPosition = 0;
 for (let i = 12; i < 24; i++) {
 const key = this.createNumberKey(i - 12, currentPosition, keyRatios[i - 12], totalRatio);
@@ -466,7 +467,7 @@ currentPosition += keyRatios[i - 12];
  
 createKey(noteIndex, position, ratio, totalRatio) {
 const key = document.createElement('div');
-key.className = 'key top-key';
+key.className = 'key white-key';
 key.dataset.noteIndex = noteIndex;
 const width = (ratio / totalRatio) * 100;
 const left = (position / totalRatio) * 100;
@@ -479,11 +480,12 @@ return key;
  
 createNumberKey(number, position, ratio, totalRatio) {
 const key = document.createElement('div');
-key.className = 'key bottom-key';
+key.className = 'key white-key';
 key.dataset.noteIndex = 12 + number;
 const width = (ratio / totalRatio) * 100;
 const left = (position / totalRatio) * 100;
-key.style.left = `${left}%`;
+// 下排键稍微偏移，创造错落感
+key.style.left = `${left + 0.5}%`;
 key.style.top = '45px';
 key.style.width = `${width}%`;
 key.style.height = '25px';
@@ -608,27 +610,9 @@ this.clearActiveKeys();
  
 checkKeyHit(clientX, clientY) {
 let hit = false;
-// 先检测黑键（z-index更高）
+// 检测所有键
 for (let keyData of this.keys) {
 const key = keyData.element;
-if (!key.classList.contains('black-key')) continue;
-const rect = key.getBoundingClientRect();
-if (clientX >= rect.left && clientX <= rect.right &&
-clientY >= rect.top && clientY <= rect.bottom) {
-hit = true;
-const noteIndex = keyData.noteIndex;
-if (this.currentNote !== noteIndex) {
-this.currentNote = noteIndex;
-this.playNote(noteIndex);
-this.updateActiveKeys(key);
-}
-return;
-}
-}
-// 再检测白键
-for (let keyData of this.keys) {
-const key = keyData.element;
-if (!key.classList.contains('white-key')) continue;
 const rect = key.getBoundingClientRect();
 if (clientX >= rect.left && clientX <= rect.right &&
 clientY >= rect.top && clientY <= rect.bottom) {
