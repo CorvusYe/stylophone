@@ -122,60 +122,9 @@ width: 100%;
 height: 100%;
 }
  
-.key {
-position: absolute;
-background: linear-gradient(180deg, #f0e6d8 0%, #e8dcc4 50%, #d8ccb4 100%);
-border: 1px solid #998877;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 10px;
-color: #554433;
-font-weight: bold;
-transition: all 0.08s;
-box-sizing: border-box;
-}
- 
-.white-key {
-z-index: 1;
-/* 真实Stylophone白键形状：顶部有圆角和凹口 */
-clip-path: polygon(
-8% 0%, 35% 0%, 40% 8%, 60% 8%, 65% 0%, 92% 0%, 100% 20%, 100% 100%, 0% 100%, 0% 20%
-);
-padding-bottom: 8px;
-}
- 
-.black-key {
-z-index: 10;
-background: linear-gradient(180deg, #443333 0%, #332222 100%);
-border: 1px solid #222222;
-color: transparent;
-/* 真实Stylophone黑键形状 */
-clip-path: polygon(
-15% 0%, 85% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%
-);
-}
- 
-.bottom-key {
-z-index: 1;
-background: linear-gradient(180deg, #f0e6d8 0%, #e8dcc4 50%, #d8ccb4 100%);
-border: 1px solid #998877;
-padding-top: 5px;
-}
- 
-.key:hover {
-filter: brightness(1.05);
-}
- 
-.key.active {
-background: linear-gradient(180deg, #ffcc00 0%, #ffaa00 100%);
-border-color: #ff9900;
-box-shadow: 0 0 10px rgba(255, 200, 0, 0.7);
-}
- 
-.black-key.active {
-background: linear-gradient(180deg, #ffcc00 0%, #ffaa00 100%);
+.keyboard canvas {
+width: 100%;
+height: 100%;
 }
  
 .controls-bar {
@@ -451,32 +400,127 @@ this.audioContext.resume();
  
 createKeyboard() {
 const keyboard = document.getElementById('keyboard');
-// 12个键的键盘布局
-const keyWidth = 100 / 12;
+// 创建canvas元素
+this.canvas = document.createElement('canvas');
+this.ctx = this.canvas.getContext('2d');
+keyboard.appendChild(this.canvas);
+// 真实Stylophone键盘布局：12个键，按照参考图的比例
+this.keyRatios = [1.5, 1.5, 2.5, 2.5, 1.5, 1.5, 2.5, 2.5, 2.5, 1.5, 1.5, 1.5];
+this.totalRatio = this.keyRatios.reduce((sum, ratio) => sum + ratio, 0);
+this.keys = [];
+this.calculateKeyPositions();
+this.drawKeyboard();
+}
+ 
+calculateKeyPositions() {
+// 计算每个键的位置和尺寸
+this.keyPositions = [];
+let currentPosition = 0;
+// 上排键
 for (let i = 0; i < 12; i++) {
-const key = document.createElement('div');
-key.className = 'key white-key';
-key.dataset.noteIndex = i;
-key.style.left = `${i * keyWidth}%`;
-key.style.top = '5px';
-key.style.width = `${keyWidth}%`;
-key.style.height = '35px';
-keyboard.appendChild(key);
-this.keys.push({ element: key, noteIndex: i });
+const ratio = this.keyRatios[i];
+const width = (ratio / this.totalRatio);
+this.keyPositions.push({
+noteIndex: i,
+type: 'top',
+left: currentPosition,
+width: width,
+top: 0.05,
+height: 0.5
+});
+currentPosition += width;
 }
-// 第二行（下排数字）
+// 下排键
+currentPosition = 0;
 for (let i = 12; i < 24; i++) {
-const key = document.createElement('div');
-key.className = 'key black-key';
-key.dataset.noteIndex = i;
-key.style.left = `${(i - 12) * keyWidth}%`;
-key.style.top = '45px';
-key.style.width = `${keyWidth}%`;
-key.style.height = '25px';
-key.textContent = i - 11;
-keyboard.appendChild(key);
-this.keys.push({ element: key, noteIndex: i });
+const ratio = this.keyRatios[i - 12];
+const width = (ratio / this.totalRatio);
+this.keyPositions.push({
+noteIndex: i,
+type: 'bottom',
+left: currentPosition,
+width: width,
+top: 0.65,
+height: 0.35
+});
+currentPosition += width;
 }
+}
+ 
+drawKeyboard() {
+const width = this.canvas.width;
+const height = this.canvas.height;
+// 清空画布
+this.ctx.clearRect(0, 0, width, height);
+// 绘制上排键
+for (let i = 0; i < 12; i++) {
+const key = this.keyPositions[i];
+const x = key.left * width;
+const y = key.top * height;
+const keyWidth = key.width * width;
+const keyHeight = key.height * height;
+// 绘制上排键形状
+this.ctx.beginPath();
+this.ctx.moveTo(x + keyWidth * 0.08, y);
+this.ctx.lineTo(x + keyWidth * 0.35, y);
+this.ctx.lineTo(x + keyWidth * 0.4, y + keyHeight * 0.08);
+this.ctx.lineTo(x + keyWidth * 0.6, y + keyHeight * 0.08);
+this.ctx.lineTo(x + keyWidth * 0.65, y);
+this.ctx.lineTo(x + keyWidth * 0.92, y);
+this.ctx.lineTo(x + keyWidth, y + keyHeight * 0.2);
+this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.lineTo(x, y + keyHeight);
+this.ctx.lineTo(x, y + keyHeight * 0.2);
+this.ctx.closePath();
+// 填充颜色
+this.ctx.fillStyle = '#f0e6d8';
+this.ctx.fill();
+// 描边
+this.ctx.strokeStyle = '#998877';
+this.ctx.lineWidth = 1;
+this.ctx.stroke();
+}
+// 绘制下排键
+for (let i = 12; i < 24; i++) {
+const key = this.keyPositions[i];
+const x = key.left * width;
+const y = key.top * height;
+const keyWidth = key.width * width;
+const keyHeight = key.height * height;
+// 绘制下排键形状
+this.ctx.beginPath();
+this.ctx.moveTo(x, y);
+this.ctx.lineTo(x + keyWidth, y);
+this.ctx.lineTo(x + keyWidth, y + keyHeight * 0.8);
+this.ctx.lineTo(x + keyWidth * 0.92, y + keyHeight);
+this.ctx.lineTo(x + keyWidth * 0.65, y + keyHeight);
+this.ctx.lineTo(x + keyWidth * 0.6, y + keyHeight * 0.92);
+this.ctx.lineTo(x + keyWidth * 0.4, y + keyHeight * 0.92);
+this.ctx.lineTo(x + keyWidth * 0.35, y + keyHeight);
+this.ctx.lineTo(x + keyWidth * 0.08, y + keyHeight);
+this.ctx.lineTo(x, y + keyHeight * 0.8);
+this.ctx.closePath();
+// 填充颜色
+this.ctx.fillStyle = '#f0e6d8';
+this.ctx.fill();
+// 描边
+this.ctx.strokeStyle = '#998877';
+this.ctx.lineWidth = 1;
+this.ctx.stroke();
+// 绘制数字
+this.ctx.fillStyle = '#554433';
+this.ctx.font = '10px Courier New';
+this.ctx.textAlign = 'center';
+this.ctx.textBaseline = 'middle';
+this.ctx.fillText((i - 11).toString(), x + keyWidth / 2, y + keyHeight / 2);
+}
+}
+ 
+resizeCanvas() {
+const container = this.canvas.parentElement;
+this.canvas.width = container.clientWidth;
+this.canvas.height = container.clientHeight;
+this.drawKeyboard();
 }
  
 getFrequency(noteIndex) {
@@ -491,7 +535,12 @@ setupEventListeners() {
 const container = document.getElementById('stylophone');
 // 计算触控笔固定点的位置
 this.updateStylusBase();
-window.addEventListener('resize', () => this.updateStylusBase());
+window.addEventListener('resize', () => {
+this.updateStylusBase();
+this.resizeCanvas();
+});
+// 初始化canvas大小
+this.resizeCanvas();
 container.addEventListener('mousedown', (e) => this.handleMouseDown(e));
 document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
 document.addEventListener('mouseup', () => this.handleMouseUp());
@@ -590,42 +639,26 @@ if (this.isPlaying) {
 this.stopOscillator();
 this.isPlaying = false;
 this.currentNote = null;
-this.clearActiveKeys();
+this.drawKeyboard();
 }
 }
  
 checkKeyHit(clientX, clientY) {
 let hit = false;
-// 先检测黑键（z-index更高）
-for (let keyData of this.keys) {
-const key = keyData.element;
-if (!key.classList.contains('black-key')) continue;
-const rect = key.getBoundingClientRect();
-if (clientX >= rect.left && clientX <= rect.right &&
-clientY >= rect.top && clientY <= rect.bottom) {
+// 计算鼠标在canvas上的相对位置
+const rect = this.canvas.getBoundingClientRect();
+const x = (clientX - rect.left) / rect.width;
+const y = (clientY - rect.top) / rect.height;
+// 检测所有键
+for (let key of this.keyPositions) {
+if (x >= key.left && x <= key.left + key.width &&
+y >= key.top && y <= key.top + key.height) {
 hit = true;
-const noteIndex = keyData.noteIndex;
+const noteIndex = key.noteIndex;
 if (this.currentNote !== noteIndex) {
 this.currentNote = noteIndex;
 this.playNote(noteIndex);
-this.updateActiveKeys(key);
-}
-return;
-}
-}
-// 再检测白键和下排键
-for (let keyData of this.keys) {
-const key = keyData.element;
-if (!key.classList.contains('white-key') && !key.classList.contains('bottom-key')) continue;
-const rect = key.getBoundingClientRect();
-if (clientX >= rect.left && clientX <= rect.right &&
-clientY >= rect.top && clientY <= rect.bottom) {
-hit = true;
-const noteIndex = keyData.noteIndex;
-if (this.currentNote !== noteIndex) {
-this.currentNote = noteIndex;
-this.playNote(noteIndex);
-this.updateActiveKeys(key);
+this.drawActiveKey(key);
 }
 return;
 }
@@ -633,7 +666,63 @@ return;
 if (!hit && this.currentNote !== null) {
 this.stopOscillator();
 this.currentNote = null;
-this.clearActiveKeys();
+this.drawKeyboard();
+}
+}
+ 
+drawActiveKey(activeKey) {
+// 重绘键盘
+this.drawKeyboard();
+const width = this.canvas.width;
+const height = this.canvas.height;
+// 绘制激活的键
+const x = activeKey.left * width;
+const y = activeKey.top * height;
+const keyWidth = activeKey.width * width;
+const keyHeight = activeKey.height * height;
+if (activeKey.type === 'top') {
+// 绘制上排键形状
+this.ctx.beginPath();
+this.ctx.moveTo(x + keyWidth * 0.08, y);
+this.ctx.lineTo(x + keyWidth * 0.35, y);
+this.ctx.lineTo(x + keyWidth * 0.4, y + keyHeight * 0.08);
+this.ctx.lineTo(x + keyWidth * 0.6, y + keyHeight * 0.08);
+this.ctx.lineTo(x + keyWidth * 0.65, y);
+this.ctx.lineTo(x + keyWidth * 0.92, y);
+this.ctx.lineTo(x + keyWidth, y + keyHeight * 0.2);
+this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.lineTo(x, y + keyHeight);
+this.ctx.lineTo(x, y + keyHeight * 0.2);
+this.ctx.closePath();
+} else {
+// 绘制下排键形状
+this.ctx.beginPath();
+this.ctx.moveTo(x, y);
+this.ctx.lineTo(x + keyWidth, y);
+this.ctx.lineTo(x + keyWidth, y + keyHeight * 0.8);
+this.ctx.lineTo(x + keyWidth * 0.92, y + keyHeight);
+this.ctx.lineTo(x + keyWidth * 0.65, y + keyHeight);
+this.ctx.lineTo(x + keyWidth * 0.6, y + keyHeight * 0.92);
+this.ctx.lineTo(x + keyWidth * 0.4, y + keyHeight * 0.92);
+this.ctx.lineTo(x + keyWidth * 0.35, y + keyHeight);
+this.ctx.lineTo(x + keyWidth * 0.08, y + keyHeight);
+this.ctx.lineTo(x, y + keyHeight * 0.8);
+this.ctx.closePath();
+}
+// 填充激活颜色
+this.ctx.fillStyle = '#ffcc00';
+this.ctx.fill();
+// 描边
+this.ctx.strokeStyle = '#ff9900';
+this.ctx.lineWidth = 1;
+this.ctx.stroke();
+// 如果是下排键，重新绘制数字
+if (activeKey.type === 'bottom') {
+this.ctx.fillStyle = '#554433';
+this.ctx.font = '10px Courier New';
+this.ctx.textAlign = 'center';
+this.ctx.textBaseline = 'middle';
+this.ctx.fillText((activeKey.noteIndex - 11).toString(), x + keyWidth / 2, y + keyHeight / 2);
 }
 }
  
@@ -666,16 +755,7 @@ this.gainNode = null;
 }
 }
  
-updateActiveKeys(activeKey) {
-this.clearActiveKeys();
-activeKey.classList.add('active');
-}
  
-clearActiveKeys() {
-document.querySelectorAll('.key').forEach(key => {
-key.classList.remove('active');
-});
-}
  
 showNote(note) {
 const display = document.getElementById('noteDisplay');
