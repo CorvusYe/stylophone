@@ -481,7 +481,7 @@ type: 'bottom',
 left: i / this.totalWidth,
 width: 1 / this.totalWidth,
 top: 0.05,
-height: 1.5, // 显著增加琴键高度
+height: 1.0, // 减小半格高度
 position: bottomNotePositions[i] // 半音位置，0=C4
 });
 }
@@ -508,7 +508,7 @@ type: 'top',
 left: key.start / this.totalWidth,
 width: width,
 top: 0.05,
-height: 0.75, // 上排键高度为下排键的一半（1.5 / 2）
+height: 0.5, // 减小半格高度（保持为下排键的一半）
 position: key.position // 音调位置
 });
 }
