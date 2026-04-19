@@ -830,6 +830,21 @@ document.getElementById('vibBtn').classList.toggle('active', this.vibratoOn);
 // 切换sus
 this.sustainOn = !this.sustainOn;
 document.getElementById('sustainBtn').classList.toggle('active', this.sustainOn);
+} else if (e.key.toLowerCase() === 'z') {
+// 切换到low
+this.octave = -1;
+document.querySelectorAll('.octave-btn').forEach(btn => btn.classList.remove('active'));
+document.querySelector('.octave-btn[data-octave="-1"]').classList.add('active');
+} else if (e.key.toLowerCase() === 'x') {
+// 切换到mid
+this.octave = 0;
+document.querySelectorAll('.octave-btn').forEach(btn => btn.classList.remove('active'));
+document.querySelector('.octave-btn[data-octave="0"]').classList.add('active');
+} else if (e.key.toLowerCase() === 'c') {
+// 切换到high
+this.octave = 1;
+document.querySelectorAll('.octave-btn').forEach(btn => btn.classList.remove('active'));
+document.querySelector('.octave-btn[data-octave="1"]').classList.add('active');
 }
 });
 }
