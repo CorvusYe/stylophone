@@ -816,7 +816,8 @@ lastAngle = getAngle(e) - currentRotation;
 document.addEventListener('mousemove', (e) => {
 if (!isDragging) return;
 const angle = getAngle(e);
-currentRotation = angle - lastAngle;
+currentRotation += angle - lastAngle;
+lastAngle = angle;
 updateTranspose();
 });
  
@@ -835,7 +836,8 @@ document.addEventListener('touchmove', (e) => {
 if (!isDragging) return;
 e.preventDefault();
 const angle = getAngle(e);
-currentRotation = angle - lastAngle;
+currentRotation += angle - lastAngle;
+lastAngle = angle;
 updateTranspose();
 });
  
