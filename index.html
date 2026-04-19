@@ -361,8 +361,8 @@ box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
  
 <div class="center-controls">
 <div class="hand-switch">
-<button class="hand-btn active" data-hand="left">左手</button>
-<button class="hand-btn" data-hand="right">右手</button>
+<button class="hand-btn" data-hand="right">左手</button>
+<button class="hand-btn active" data-hand="left">右手</button>
 </div>
 </div>
  
@@ -583,7 +583,7 @@ const dy = this.mouseY - this.stylusBaseY;
 // 基础角度计算
 let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
 // 调整倾斜方向：确保笔尖朝向左上方
-if (this.handedness === 'right') {
+if (this.handedness === 'left') {
 // 右手：笔在右侧，笔尖朝左上方
 angle += 180;
 } else {
