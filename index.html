@@ -490,11 +490,14 @@ const x = key.left * width;
 const y = key.top * height;
 const keyWidth = key.width * width;
 const keyHeight = key.height * height;
-// 绘制上排键形状
+const radius = keyHeight * 0.2; // 圆角半径
+// 绘制上排键形状，底部有圆角
 this.ctx.beginPath();
 this.ctx.moveTo(x, y);
-this.ctx.lineTo(x, y + keyHeight);
-this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.lineTo(x, y + keyHeight - radius);
+this.ctx.arc(x + radius, y + keyHeight - radius, radius, Math.PI, Math.PI * 0.5, true);
+this.ctx.lineTo(x + keyWidth - radius, y + keyHeight);
+this.ctx.arc(x + keyWidth - radius, y + keyHeight - radius, radius, Math.PI * 0.5, 0, true);
 this.ctx.lineTo(x + keyWidth, y);
 this.ctx.closePath();
 // 填充颜色
@@ -730,11 +733,14 @@ const x = key.left * width;
 const y = key.top * height;
 const keyWidth = key.width * width;
 const keyHeight = key.height * height;
-// 绘制上排键形状
+const radius = keyHeight * 0.2; // 圆角半径
+// 绘制上排键形状，底部有圆角
 this.ctx.beginPath();
 this.ctx.moveTo(x, y);
-this.ctx.lineTo(x, y + keyHeight);
-this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.lineTo(x, y + keyHeight - radius);
+this.ctx.arc(x + radius, y + keyHeight - radius, radius, Math.PI, Math.PI * 0.5, true);
+this.ctx.lineTo(x + keyWidth - radius, y + keyHeight);
+this.ctx.arc(x + keyWidth - radius, y + keyHeight - radius, radius, Math.PI * 0.5, 0, true);
 this.ctx.lineTo(x + keyWidth, y);
 this.ctx.closePath();
 // 如果这个键是激活的，用激活颜色
