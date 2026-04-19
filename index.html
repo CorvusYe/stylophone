@@ -830,8 +830,8 @@ if (this.vibratoOn) {
 this.vibratoOscillator = this.audioContext.createOscillator();
 this.vibratoGain = this.audioContext.createGain();
 this.vibratoOscillator.type = 'sine';
-this.vibratoOscillator.frequency.setValueAtTime(5, this.audioContext.currentTime); // 5Hz 的颤音速度
-this.vibratoGain.gain.setValueAtTime(baseFreq * 0.05, this.audioContext.currentTime); // 5% 的音高变化
+this.vibratoOscillator.frequency.setValueAtTime(3, this.audioContext.currentTime); // 3Hz 的颤音速度
+this.vibratoGain.gain.setValueAtTime(baseFreq * 0.02, this.audioContext.currentTime); // 2% 的音高变化
 this.vibratoOscillator.connect(this.vibratoGain);
 this.vibratoGain.connect(this.oscillator.frequency);
 this.vibratoOscillator.start();
