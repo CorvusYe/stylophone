@@ -819,6 +819,19 @@ isDragging = false;
  
 document.addEventListener('click', () => this.initAudio(), { once: true });
 document.addEventListener('touchstart', () => this.initAudio(), { once: true });
+ 
+// 键盘快捷键
+document.addEventListener('keydown', (e) => {
+if (e.key.toLowerCase() === 'v') {
+// 切换vib
+this.vibratoOn = !this.vibratoOn;
+document.getElementById('vibBtn').classList.toggle('active', this.vibratoOn);
+} else if (e.key.toLowerCase() === 's') {
+// 切换sus
+this.sustainOn = !this.sustainOn;
+document.getElementById('sustainBtn').classList.toggle('active', this.sustainOn);
+}
+});
 }
  
 updateStylusBase() {
