@@ -548,15 +548,8 @@ document.addEventListener('touchstart', () => this.initAudio(), { once: true });
 }
  
 updateStylusBase() {
-const container = document.getElementById('stylophone');
-const rect = container.getBoundingClientRect();
-if (this.handedness === 'left') {
-this.stylusBaseX = rect.left - 30;
-this.stylusBaseY = rect.top + 50;
-} else {
-this.stylusBaseX = rect.right + 30;
-this.stylusBaseY = rect.top + 50;
-}
+// 现在不使用stylusBaseX和stylusBaseY
+// 直接使用数学坐标系的固定点
 }
  
 handleMouseDown(e) {
@@ -577,22 +570,33 @@ this.checkKeyHit(e.clientX, e.clientY);
  
 updateStylus() {
 const stylus = document.getElementById('stylus');
-// 从用户视角（正下方）计算自然的笔倾斜角度
-const dx = this.mouseX - this.stylusBaseX;
-const dy = this.mouseY - this.stylusBaseY;
-// 计算基础角度
-let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-// 从用户视角调整倾斜方向：
+// 计算机屏幕坐标系转换为数学坐标系
+// 屏幕左下角是(0, 0)，y轴向上
+const screenHeight = window.innerHeight;
+const mathMouseX = this.mouseX;
+const mathMouseY = screenHeight - this.mouseY;
+let angle = 0;
 if (this.handedness === 'left') {
-// 右手模式：笔在右侧，用户从下方看，笔尖朝左上方
-angle += 180 - 30; // 30度的自然倾斜
+// 右手模式：从(屏幕宽度, 0)到笔尖的角度
+const mathBaseX = window.innerWidth;
+const mathBaseY = 0;
+const dx = mathMouseX - mathBaseX;
+const dy = mathMouseY - mathBaseY;
+angle = Math.atan2(dy, dx) * (180 / Math.PI);
 } else {
-// 左手模式：笔在左侧，用户从下方看，笔尖朝右上方
-angle += 0 + 30; // 30度的自然倾斜
+// 左手模式：从(0, 0)到笔尖的角度
+const mathBaseX = 0;
+const mathBaseY = 0;
+const dx = mathMouseX - mathBaseX;
+const dy = mathMouseY - mathBaseY;
+angle = Math.atan2(dy, dx) * (180 / Math.PI);
 }
+// 转换为CSS旋转角度（顺时针为正）
+// 数学坐标系的角度需要转换
+const cssAngle = -angle;
 stylus.style.left = this.mouseX + 'px';
 stylus.style.top = this.mouseY + 'px';
-stylus.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
+stylus.style.transform = `translate(-50%, -100%) rotate(${cssAngle}deg)`;
 }
  
 handleMouseUp() {
