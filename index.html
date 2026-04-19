@@ -123,6 +123,63 @@ padding: 8px;
 display: flex;
 flex-direction: column;
 align-items: center;
+gap: 8px;
+}
+ 
+.transpose-container {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 4px;
+}
+ 
+.transpose-label {
+font-size: 9px;
+color: #aaaaaa;
+font-weight: bold;
+}
+ 
+.knob-container {
+position: relative;
+width: 40px;
+height: 40px;
+}
+ 
+.knob {
+width: 100%;
+height: 100%;
+border-radius: 50%;
+background: linear-gradient(145deg, #444444 0%, #2a2a2a 50%, #1a1a1a 100%);
+border: 2px solid #555555;
+box-shadow: 
+0 2px 8px rgba(0, 0, 0, 0.5),
+inset 0 1px 0 rgba(255, 255, 255, 0.1);
+cursor: grab;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: box-shadow 0.2s;
+}
+ 
+.knob:active {
+cursor: grabbing;
+}
+ 
+.knob-marker {
+width: 4px;
+height: 14px;
+background: linear-gradient(180deg, #ff6600 0%, #cc4400 100%);
+border-radius: 2px;
+position: absolute;
+top: 3px;
+}
+ 
+.transpose-value {
+font-size: 10px;
+color: #ffffff;
+font-weight: bold;
+min-width: 20px;
+text-align: center;
 }
  
 .center-controls {
@@ -310,6 +367,15 @@ box-shadow: 0 0 8px rgba(153, 51, 255, 0.6);
  
 <div class="controls-bar">
 <div class="left-controls">
+<div class="transpose-container">
+<div class="transpose-label">Transpose</div>
+<div class="knob-container">
+<div class="knob" id="transposeKnob" style="transform: rotate(0deg);">
+<div class="knob-marker"></div>
+</div>
+</div>
+<div class="transpose-value" id="transposeValue">0</div>
+</div>
 <div class="power-switch">
 <div class="hand-switch">
 <button class="hand-btn" data-power="off">OFF</button>
@@ -368,6 +434,7 @@ this.vibratoGain = null;
 this.isPlaying = false;
 this.currentNote = null;
 this.octave = 0;
+this.transpose = 0;
 this.powerOn = true;
 this.handedness = 'left';
 this.vibratoOn = false;
@@ -612,7 +679,7 @@ getFrequencyByPosition(normalizedX) {
 // 保留此函数作为备用
 const position = normalizedX * 23; // 0到23
 const baseFreq = 261.63; // C4
-return baseFreq * Math.pow(2, (position / 12) + this.octave);
+return baseFreq * Math.pow(2, (position / 12) + this.octave + (this.transpose / 12));
 }
  
 getFrequencyByKeyPosition(key, localX) {
@@ -622,7 +689,7 @@ const basePosition = key.position; // 键的基准半音位置
 const variationRange = 1.0; // 每个键内的音高变化范围（+/-0.5个半音）
 const position = basePosition + (localX - 0.5) * variationRange;
 const baseFreq = 261.63; // C4
-return baseFreq * Math.pow(2, (position / 12) + this.octave);
+return baseFreq * Math.pow(2, (position / 12) + this.octave + (this.transpose / 12));
 }
  
 setupEventListeners() {
@@ -685,6 +752,66 @@ e.target.classList.toggle('active', this.vibratoOn);
 document.getElementById('sustainBtn').addEventListener('click', (e) => {
 this.sustainOn = !this.sustainOn;
 e.target.classList.toggle('active', this.sustainOn);
+});
+ 
+// 移调旋钮处理
+const knob = document.getElementById('transposeKnob');
+let isDragging = false;
+let lastAngle = 0;
+let currentRotation = 0;
+ 
+const getAngle = (e) => {
+const rect = knob.getBoundingClientRect();
+const centerX = rect.left + rect.width / 2;
+const centerY = rect.top + rect.height / 2;
+const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+return Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI);
+};
+ 
+const updateTranspose = () => {
+// 限制旋转范围在 -180 到 180 度
+if (currentRotation > 180) currentRotation = 180;
+if (currentRotation < -180) currentRotation = -180;
+// 映射到 -12 到 12 个半音
+this.transpose = Math.round((currentRotation / 180) * 12);
+knob.style.transform = `rotate(${currentRotation}deg)`;
+document.getElementById('transposeValue').textContent = this.transpose;
+};
+ 
+knob.addEventListener('mousedown', (e) => {
+isDragging = true;
+lastAngle = getAngle(e) - currentRotation;
+});
+ 
+document.addEventListener('mousemove', (e) => {
+if (!isDragging) return;
+const angle = getAngle(e);
+currentRotation = angle - lastAngle;
+updateTranspose();
+});
+ 
+document.addEventListener('mouseup', () => {
+isDragging = false;
+});
+ 
+// 触摸事件
+knob.addEventListener('touchstart', (e) => {
+e.preventDefault();
+isDragging = true;
+lastAngle = getAngle(e) - currentRotation;
+});
+ 
+document.addEventListener('touchmove', (e) => {
+if (!isDragging) return;
+e.preventDefault();
+const angle = getAngle(e);
+currentRotation = angle - lastAngle;
+updateTranspose();
+});
+ 
+document.addEventListener('touchend', () => {
+isDragging = false;
 });
  
 document.addEventListener('click', () => this.initAudio(), { once: true });
