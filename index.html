@@ -482,12 +482,6 @@ this.ctx.fill();
 this.ctx.strokeStyle = '#998877';
 this.ctx.lineWidth = 1;
 this.ctx.stroke();
-// 绘制数字0-14（在键的下半部分）
-this.ctx.fillStyle = '#554433';
-this.ctx.font = 'bold 12px Courier New';
-this.ctx.textAlign = 'center';
-this.ctx.textBaseline = 'middle';
-this.ctx.fillText((i).toString(), x + keyWidth / 2, y + keyHeight * 0.75);
 }
 // 后绘制上排键（10个键，有错落感），这样上排会覆盖下排
 for (let i = 15; i < 25; i++) {
@@ -525,11 +519,18 @@ this.drawKeyboard();
 }
  
 getFrequency(noteIndex) {
-const octaveOffset = Math.floor(noteIndex / 12);
-const noteInOctave = noteIndex % 12;
-const noteName = this.noteNames[noteInOctave];
-const baseFreq = this.baseFrequencies[noteName];
-return baseFreq * Math.pow(2, octaveOffset + this.octave);
+let position = 0;
+// 找到这个noteIndex对应的键位置
+for (let key of this.keyPositions) {
+if (key.noteIndex === noteIndex) {
+position = (key.left + key.width / 2) * 15; // 转换为0-15的坐标
+break;
+}
+}
+// 根据参考图的位置，音调是线性的，从左到右逐渐升高
+// 0对应C3，15对应C5
+const baseFreq = 130.81; // C3
+return baseFreq * Math.pow(2, (position / 12) + this.octave);
 }
  
 setupEventListeners() {
@@ -688,37 +689,71 @@ this.drawKeyboard();
 }
  
 drawActiveKey(activeKey) {
-// 重绘键盘
-this.drawKeyboard();
 const width = this.canvas.width;
 const height = this.canvas.height;
-// 绘制激活的键
-const x = activeKey.left * width;
-const y = activeKey.top * height;
-const keyWidth = activeKey.width * width;
-const keyHeight = activeKey.height * height;
-// 绘制键形状
+// 清空画布
+this.ctx.clearRect(0, 0, width, height);
+// 绘制键盘背景
+this.ctx.fillStyle = '#e0d8c8';
+this.ctx.fillRect(0, 0, width, height);
+// 先绘制所有下排键
+for (let i = 0; i < 15; i++) {
+const key = this.keyPositions[i];
+const x = key.left * width;
+const y = key.top * height;
+const keyWidth = key.width * width;
+const keyHeight = key.height * height;
+// 绘制下排键形状
+this.ctx.beginPath();
+this.ctx.moveTo(x, y);
+this.ctx.lineTo(x + keyWidth, y);
+this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.lineTo(x, y + keyHeight);
+this.ctx.closePath();
+// 如果这个键是激活的，用激活颜色
+if (key.noteIndex === activeKey.noteIndex && key.type === 'bottom') {
+this.ctx.fillStyle = '#ffcc00';
+this.ctx.fill();
+this.ctx.strokeStyle = '#ff9900';
+} else {
+this.ctx.fillStyle = '#f0e6d8';
+this.ctx.fill();
+this.ctx.strokeStyle = '#998877';
+}
+this.ctx.lineWidth = 1;
+this.ctx.stroke();
+}
+// 后绘制所有上排键，覆盖在下排键上
+for (let i = 15; i < 25; i++) {
+const key = this.keyPositions[i];
+const x = key.left * width;
+const y = key.top * height;
+const keyWidth = key.width * width;
+const keyHeight = key.height * height;
+// 绘制上排键形状
 this.ctx.beginPath();
 this.ctx.moveTo(x, y);
 this.ctx.lineTo(x, y + keyHeight);
 this.ctx.lineTo(x + keyWidth, y + keyHeight);
 this.ctx.lineTo(x + keyWidth, y);
 this.ctx.closePath();
-// 填充激活颜色
+// 如果这个键是激活的，用激活颜色
+if (key.noteIndex === activeKey.noteIndex && key.type === 'top') {
 this.ctx.fillStyle = '#ffcc00';
 this.ctx.fill();
-// 描边
 this.ctx.strokeStyle = '#ff9900';
+} else {
+this.ctx.fillStyle = '#f0e6d8';
+this.ctx.fill();
+this.ctx.strokeStyle = '#998877';
+}
 this.ctx.lineWidth = 1;
 this.ctx.stroke();
-// 如果是下排键，重新绘制数字
-if (activeKey.type === 'bottom') {
-this.ctx.fillStyle = '#554433';
-this.ctx.font = 'bold 12px Courier New';
-this.ctx.textAlign = 'center';
-this.ctx.textBaseline = 'middle';
-this.ctx.fillText((activeKey.noteIndex - 10).toString(), x + keyWidth / 2, y + keyHeight * 0.75);
 }
+// 绘制键盘边框
+this.ctx.strokeStyle = '#333';
+this.ctx.lineWidth = 2;
+this.ctx.strokeRect(0, 0, width, height);
 }
  
 playNote(noteIndex) {
