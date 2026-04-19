@@ -253,15 +253,7 @@ flex-direction: row;
 gap: 3px;
 }
  
-.stylus-wire {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-pointer-events: none;
-z-index: 999;
-}
+ 
  
 .stylus {
 position: fixed;
@@ -395,9 +387,6 @@ box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 <div class="stylus" id="stylus">
 <div class="stylus-tip"></div>
 </div>
-<svg class="stylus-wire" id="stylusWire">
-<path id="wirePath" stroke="#ffd700" stroke-width="2" fill="none" stroke-linecap="round" />
-</svg>
  
 <script>
 class StylophoneApp {
@@ -581,7 +570,6 @@ handleMouseMove(e) {
 this.mouseX = e.clientX;
 this.mouseY = e.clientY;
 this.updateStylus();
-this.updateWire();
 if (this.isPlaying && this.powerOn) {
 this.checkKeyHit(e.clientX, e.clientY);
 }
@@ -592,29 +580,14 @@ const stylus = document.getElementById('stylus');
 // 计算角度
 const dx = this.mouseX - this.stylusBaseX;
 const dy = this.mouseY - this.stylusBaseY;
-const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+// 交换左右手的倾斜方向
+if (this.handedness === 'left') {
+angle += 180;
+}
 stylus.style.left = this.mouseX + 'px';
 stylus.style.top = this.mouseY + 'px';
 stylus.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
-}
- 
-updateWire() {
-const wirePath = document.getElementById('wirePath');
-// 计算贝塞尔曲线控制点，创建自然弯曲
-const dx = this.mouseX - this.stylusBaseX;
-const dy = this.mouseY - this.stylusBaseY;
-const distance = Math.sqrt(dx * dx + dy * dy);
-// 控制点距离
-const controlDistance = distance * 0.3;
-// 计算垂直方向的控制点
-const angle = Math.atan2(dy, dx);
-const controlOffsetX = Math.sin(angle) * controlDistance;
-const controlOffsetY = -Math.cos(angle) * controlDistance;
-// 创建贝塞尔曲线路径
-const path = `M ${this.stylusBaseX} ${this.stylusBaseY} Q 
-${this.stylusBaseX + controlOffsetX} ${this.stylusBaseY + controlOffsetY} 
-${this.mouseX} ${this.mouseY}`;
-wirePath.setAttribute('d', path);
 }
  
 handleMouseUp() {
@@ -721,7 +694,6 @@ display.classList.remove('show');
  
 animate() {
 this.updateStylus();
-this.updateWire();
 requestAnimationFrame(() => this.animate());
 }
 }
