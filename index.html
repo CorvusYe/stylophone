@@ -197,13 +197,10 @@ this.currentTimbre = 'kalimba';
 this.mouseX = window.innerWidth / 2;
 this.mouseY = window.innerHeight / 2;
 this.tines = [];
-this.noteNames = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5', 'C6'];
-this.noteFrequencies = {
-'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
-'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25,
-'D5': 587.33, 'E5': 659.25, 'F5': 698.46, 'G5': 783.99,
-'A5': 880.00, 'B5': 987.77, 'C6': 1046.50
-};
+this.isPlaying = false;
+this.oscillator = null;
+this.gainNode = null;
+this.noteIndicatorTimeout = null;
 this.init();
 }
  
@@ -224,12 +221,10 @@ this.audioContext.resume();
  
 createTines() {
 const container = document.getElementById('tinesContainer');
-const numTines = this.noteNames.length;
+const numTines = 15;
 for (let i = 0; i < numTines; i++) {
 const tine = document.createElement('div');
 tine.className = 'tine';
-tine.dataset.note = this.noteNames[i];
-tine.dataset.index = i;
 const width = 20 + (numTines - i) * 3;
 const height = 100 + i * 15;
 const x = (i / (numTines - 1)) * 100;
@@ -241,9 +236,7 @@ tine.style.transform = 'translate(-50%, -50%)';
 tine.style.background = this.getTineGradient(i);
 this.tines.push({
 element: tine,
-x: x,
-note: this.noteNames[i],
-frequency: this.noteFrequencies[this.noteNames[i]]
+x: x
 });
 container.appendChild(tine);
 }
@@ -262,7 +255,8 @@ setupEventListeners() {
 const container = document.getElementById('container');
 container.addEventListener('mousemove', (e) => this.handleMouseMove(e));
 container.addEventListener('mousedown', (e) => this.handleMouseDown(e));
-container.addEventListener('mouseup', () => this.isMouseDown = false);
+container.addEventListener('mouseup', () => this.handleMouseUp());
+container.addEventListener('mouseleave', () => this.handleMouseUp());
 container.addEventListener('touchmove', (e) => {
 e.preventDefault();
 const touch = e.touches[0];
@@ -275,7 +269,7 @@ this.handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
 this.handleMouseDown({ clientX: touch.clientX, clientY: touch.clientY });
 }, { passive: false });
 container.addEventListener('touchend', () => {
-this.isMouseDown = false;
+this.handleMouseUp();
 });
  
 document.querySelectorAll('.timbre-btn').forEach(btn => {
@@ -283,6 +277,9 @@ btn.addEventListener('click', () => {
 document.querySelectorAll('.timbre-btn').forEach(b => b.classList.remove('active'));
 btn.classList.add('active');
 this.currentTimbre = btn.dataset.timbre;
+if (this.isPlaying) {
+this.updateOscillatorType();
+}
 });
 });
  
@@ -295,79 +292,102 @@ this.mouseX = e.clientX;
 this.mouseY = e.clientY;
 this.updateStylus();
 this.updateConnectionLine();
+if (this.isPlaying) {
+this.updateFrequency();
+}
 }
  
 handleMouseDown(e) {
-this.isMouseDown = true;
+if (!this.isPlaying) {
+this.isPlaying = true;
 this.initAudio();
-const container = document.getElementById('container');
-const rect = container.getBoundingClientRect();
-const x = e.clientX - rect.left;
-const y = e.clientY - rect.top;
-this.checkTineCollision(x, y, rect);
+this.startOscillator();
+}
+this.updateFrequency();
 }
  
-checkTineCollision(x, y, rect) {
-for (let i = this.tines.length - 1; i >= 0; i--) {
-const tine = this.tines[i];
-const tineRect = tine.element.getBoundingClientRect();
-if (x >= tineRect.left - rect.left && 
-x <= tineRect.right - rect.left &&
-y >= tineRect.top - rect.top && 
-y <= tineRect.bottom - rect.top) {
-this.playNote(tine.note, tine.frequency);
-tine.element.classList.add('playing');
-setTimeout(() => tine.element.classList.remove('playing'), 300);
-this.showNoteIndicator(tine.note);
-break;
-}
+handleMouseUp() {
+if (this.isPlaying) {
+this.stopOscillator();
+this.isPlaying = false;
 }
 }
  
-playNote(note, frequency) {
+startOscillator() {
 if (!this.audioContext) return;
-const oscillator = this.audioContext.createOscillator();
-const gainNode = this.audioContext.createGain();
-oscillator.connect(gainNode);
-gainNode.connect(this.audioContext.destination);
+this.oscillator = this.audioContext.createOscillator();
+this.gainNode = this.audioContext.createGain();
+this.oscillator.connect(this.gainNode);
+this.gainNode.connect(this.audioContext.destination);
+this.updateOscillatorType();
+this.updateFrequency();
+this.gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+this.gainNode.gain.linearRampToValueAtTime(0.5, this.audioContext.currentTime + 0.1);
+this.oscillator.start();
+}
+ 
+stopOscillator() {
+if (this.oscillator) {
+this.gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.3);
+this.oscillator.stop(this.audioContext.currentTime + 0.3);
+this.oscillator = null;
+this.gainNode = null;
+}
+}
+ 
+updateOscillatorType() {
+if (!this.oscillator) return;
 switch (this.currentTimbre) {
 case 'kalimba':
-oscillator.type = 'sine';
-oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
-const harmonics = [2, 3, 4, 5];
-harmonics.forEach((harmonic, index) => {
-const harmonicOsc = this.audioContext.createOscillator();
-const harmonicGain = this.audioContext.createGain();
-harmonicOsc.type = 'sine';
-harmonicOsc.frequency.setValueAtTime(frequency * harmonic, this.audioContext.currentTime);
-harmonicGain.gain.setValueAtTime(0.1 / harmonic, this.audioContext.currentTime);
-harmonicGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 1.5 - index * 0.2);
-harmonicOsc.connect(harmonicGain);
-harmonicGain.connect(this.audioContext.destination);
-harmonicOsc.start();
-harmonicOsc.stop(this.audioContext.currentTime + 1.5);
-});
+this.oscillator.type = 'sine';
 break;
 case 'piano':
-oscillator.type = 'triangle';
-oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+this.oscillator.type = 'triangle';
 break;
 case 'guqin':
-oscillator.type = 'sawtooth';
-oscillator.frequency.setValueAtTime(frequency * 0.5, this.audioContext.currentTime);
+this.oscillator.type = 'sawtooth';
 break;
 }
-gainNode.gain.setValueAtTime(0.5, this.audioContext.currentTime);
-gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 2);
-oscillator.start();
-oscillator.stop(this.audioContext.currentTime + 2);
+}
+ 
+updateFrequency() {
+if (!this.oscillator) return;
+const container = document.getElementById('container');
+const rect = container.getBoundingClientRect();
+const x = this.mouseX - rect.left;
+const y = this.mouseY - rect.top;
+// Calculate normalized position (0-1) from left to right
+const normalizedX = x / rect.width;
+// Map to frequency range (C2 to C7)
+const minFreq = 65.41;  // C2
+const maxFreq = 2093.00; // C7
+let frequency = minFreq + (maxFreq - minFreq) * normalizedX;
+// Adjust for guqin timbre
+if (this.currentTimbre === 'guqin') {
+frequency *= 0.5;
+}
+this.oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+// Update note indicator with nearest note
+const note = this.getNearestNote(frequency);
+this.showNoteIndicator(note);
+}
+ 
+getNearestNote(frequency) {
+const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const refFreq = 440; // A4
+const refNote = 49;  // A4
+const semitones = Math.round(12 * Math.log2(frequency / refFreq));
+const noteIndex = (refNote + semitones) % 12;
+const octave = Math.floor((refNote + semitones) / 12) - 1;
+return `${notes[noteIndex]}${octave}`;
 }
  
 showNoteIndicator(note) {
 const indicator = document.getElementById('noteIndicator');
 indicator.textContent = note;
 indicator.classList.add('show');
-setTimeout(() => indicator.classList.remove('show'), 500);
+clearTimeout(this.noteIndicatorTimeout);
+this.noteIndicatorTimeout = setTimeout(() => indicator.classList.remove('show'), 500);
 }
  
 updateStylus() {
