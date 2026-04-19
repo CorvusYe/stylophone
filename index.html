@@ -459,12 +459,13 @@ this.drawKeyboard();
 calculateKeyPositions() {
 // 计算每个键的位置和尺寸
 this.keyPositions = [];
-// 总范围是0到11（正好11个单位，下排12个键各占1个单位）
-this.totalWidth = 11;
-// 下排键（白键/自然音）：按照钢琴布局 C, D, E, F, G, A, B, C, D, E, F, G
-const bottomNotePositions = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19];
-const bottomNoteNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
-for (let i = 0; i < 12; i++) {
+// 总范围是0到12
+this.totalWidth = 12;
+// 下排键（白键/自然音）：按照钢琴布局 C, D, E, F, G, A, B, C, D, E, F, G, A
+// 13个键，从0到12
+const bottomNotePositions = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21];
+const bottomNoteNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'A'];
+for (let i = 0; i < 13; i++) {
 this.keyPositions.push({
 noteIndex: bottomNotePositions[i],
 noteName: bottomNoteNames[i],
@@ -476,8 +477,7 @@ height: 0.9,
 position: bottomNotePositions[i] // 半音位置，0=C3，1=C#3，2=D3，...
 });
 }
-// 上排键（黑键/升调）：0.5-1.5=C#, 2.5-3.5=D#, 3.5-4.5=F#, 5.5-6.5=G#, 6.5-7.5=A#, 7.5-8.5=C#, 9.5-10.5=D#, 10.5-11=F#
-// 最后一个键到11结束，而不是11.5
+// 上排键（黑键/升调）：0.5-1.5=C#, 2.5-3.5=D#, 3.5-4.5=F#, 5.5-6.5=G#, 6.5-7.5=A#, 7.5-8.5=C#, 9.5-10.5=D#, 10.5-11.5=F#
 const topKeyPositions = [
 {start: 0.5, end: 1.5, position: 1, noteName: 'C#'},
 {start: 2.5, end: 3.5, position: 3, noteName: 'D#'},
@@ -486,7 +486,7 @@ const topKeyPositions = [
 {start: 6.5, end: 7.5, position: 10, noteName: 'A#'},
 {start: 7.5, end: 8.5, position: 13, noteName: 'C#'},
 {start: 9.5, end: 10.5, position: 15, noteName: 'D#'},
-{start: 10.5, end: 11, position: 18, noteName: 'F#'}
+{start: 10.5, end: 11.5, position: 18, noteName: 'F#'}
 ];
 for (let i = 0; i < topKeyPositions.length; i++) {
 const key = topKeyPositions[i];
@@ -512,8 +512,8 @@ this.ctx.clearRect(0, 0, width, height);
 // 绘制键盘背景
 this.ctx.fillStyle = '#e0d8c8';
 this.ctx.fillRect(0, 0, width, height);
-// 先绘制下排键（12个键，0-11连续）
-for (let i = 0; i < 12; i++) {
+// 先绘制下排键（13个键，0-12连续）
+for (let i = 0; i < 13; i++) {
 const key = this.keyPositions[i];
 const x = key.left * width;
 const y = key.top * height;
@@ -535,7 +535,7 @@ this.ctx.lineWidth = 1;
 this.ctx.stroke();
 }
 // 后绘制上排键（8个键，有错落感），这样上排会覆盖下排
-for (let i = 12; i < 20; i++) {
+for (let i = 13; i < 21; i++) {
 const key = this.keyPositions[i];
 const x = key.left * width;
 const y = key.top * height;
@@ -710,8 +710,8 @@ let hit = false;
 const rect = this.canvas.getBoundingClientRect();
 const x = (clientX - rect.left) / rect.width;
 const y = (clientY - rect.top) / rect.height;
-// 先检测上排键（最后8个，索引12-19）
-for (let i = 12; i < this.keyPositions.length; i++) {
+// 先检测上排键（最后8个，索引13-20）
+for (let i = 13; i < this.keyPositions.length; i++) {
 const key = this.keyPositions[i];
 if (x >= key.left && x <= key.left + key.width &&
 y >= key.top && y <= key.top + key.height) {
@@ -725,8 +725,8 @@ this.drawActiveKey(key);
 return;
 }
 }
-// 再检测下排键（前12个，索引0-11）
-for (let i = 0; i < 12; i++) {
+// 再检测下排键（前13个，索引0-12）
+for (let i = 0; i < 13; i++) {
 const key = this.keyPositions[i];
 if (x >= key.left && x <= key.left + key.width &&
 y >= key.top && y <= key.top + key.height) {
@@ -755,8 +755,8 @@ this.ctx.clearRect(0, 0, width, height);
 // 绘制键盘背景
 this.ctx.fillStyle = '#e0d8c8';
 this.ctx.fillRect(0, 0, width, height);
-// 先绘制所有下排键（前12个）
-for (let i = 0; i < 12; i++) {
+// 先绘制所有下排键（前13个）
+for (let i = 0; i < 13; i++) {
 const key = this.keyPositions[i];
 const x = key.left * width;
 const y = key.top * height;
@@ -782,8 +782,8 @@ this.ctx.strokeStyle = '#998877';
 this.ctx.lineWidth = 1;
 this.ctx.stroke();
 }
-// 后绘制所有上排键，覆盖在下排键上（后8个）
-for (let i = 12; i < 20; i++) {
+// 后绘制所有上排键，覆盖在下排键上（后8个，索引13-20）
+for (let i = 13; i < 21; i++) {
 const key = this.keyPositions[i];
 const x = key.left * width;
 const y = key.top * height;
