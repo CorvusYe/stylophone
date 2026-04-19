@@ -593,10 +593,18 @@ this.drawKeyboard();
 }
  
 getFrequencyByPosition(normalizedX) {
-// 归一化X坐标（0-1）映射到音高范围
-// 0对应C4，1对应G5（约2个八度）
-const totalSemitones = 19; // 从C4到G5是19个半音
-const position = normalizedX * totalSemitones;
+// 保留此函数作为备用
+const position = normalizedX * 23; // 0到23
+const baseFreq = 261.63; // C4
+return baseFreq * Math.pow(2, (position / 12) + this.octave);
+}
+ 
+getFrequencyByKeyPosition(key, localX) {
+// 以键的基准音高为中心，在键范围内有轻微的线性变化
+// localX: 0-1，0=键左端，1=键右端
+const basePosition = key.position; // 键的基准半音位置
+const variationRange = 0.2; // 每个键内的音高变化范围（+/-0.1个半音）
+const position = basePosition + (localX - 0.5) * variationRange;
 const baseFreq = 261.63; // C4
 return baseFreq * Math.pow(2, (position / 12) + this.octave);
 }
@@ -754,15 +762,20 @@ break;
 }
 }
 if (hit) {
-// 播放线性音高
-const normalizedX = Math.max(0, Math.min(1, x)); // 限制在0-1范围内
+// 计算触笔在当前键内的相对位置 (0-1)
+const keyLocalX = (x - key.left) / key.width;
+const clampedLocalX = Math.max(0, Math.min(1, keyLocalX));
 if (!this.oscillator) {
 // 开始新音符
-this.playNoteByPosition(normalizedX);
+this.playNoteByKeyPosition(key, clampedLocalX);
 } else {
 // 更新现有频率
-const newFreq = this.getFrequencyByPosition(normalizedX);
+const newFreq = this.getFrequencyByKeyPosition(key, clampedLocalX);
 this.oscillator.frequency.setValueAtTime(newFreq, this.audioContext.currentTime);
+// 如果有颤音，同时更新颤音增益
+if (this.vibratoOn && this.vibratoGain) {
+this.vibratoGain.gain.setValueAtTime(newFreq * 0.008, this.audioContext.currentTime);
+}
 }
 // 更新显示和高亮
 if (this.currentNote !== key.noteIndex) {
@@ -879,19 +892,18 @@ break;
 }
 }
 if (key) {
-const centerX = key.left + key.width / 2;
-this.playNoteByPosition(centerX);
+this.playNoteByKeyPosition(key, 0.5); // 从键的中心开始
 }
 }
  
-playNoteByPosition(normalizedX) {
+playNoteByKeyPosition(key, localX) {
 if (!this.audioContext) return;
 this.stopOscillator();
 this.oscillator = this.audioContext.createOscillator();
 this.gainNode = this.audioContext.createGain();
 // 经典Stylophone使用方形波
 this.oscillator.type = 'square';
-const baseFreq = this.getFrequencyByPosition(normalizedX);
+const baseFreq = this.getFrequencyByKeyPosition(key, localX);
 this.oscillator.frequency.setValueAtTime(
 baseFreq,
 this.audioContext.currentTime
