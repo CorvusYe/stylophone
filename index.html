@@ -171,15 +171,23 @@ box-shadow: 0 0 10px rgba(255, 200, 0, 0.7);
 background: linear-gradient(180deg, #ffcc00 0%, #ffaa00 100%);
 }
  
-.keyboard-area {
+.controls-bar {
 display: flex;
-gap: 15px;
+justify-content: space-between;
 align-items: center;
+padding: 10px 15px;
+background: linear-gradient(180deg, #333333 0%, #222222 100%);
+margin-bottom: 10px;
+border-radius: 3px;
+}
+ 
+.keyboard-area {
+display: block;
 background: linear-gradient(180deg, #e8e0d0 0%, #d8d0c0 50%, #c8c0b0 100%);
+padding: 8px;
 }
  
 .left-controls {
-width: 70px;
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -196,12 +204,11 @@ display: flex;
 gap: 10px;
 margin-top: 4px;
 font-size: 9px;
-color: #666666;
+color: #aaaaaa;
 font-weight: bold;
 }
  
 .right-controls {
-width: 80px;
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -209,7 +216,7 @@ align-items: center;
  
 .octave-switch {
 display: flex;
-flex-direction: column;
+flex-direction: row;
 gap: 3px;
 }
  
@@ -282,7 +289,7 @@ box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 <div class="speaker-logo">stylophone</div>
 </div>
  
-<div class="keyboard-area">
+<div class="controls-bar">
 <div class="left-controls">
 <div class="power-switch">
 <div class="switch on" id="powerSwitch"></div>
@@ -292,9 +299,6 @@ box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 </div>
 </div>
 </div>
-<div class="keyboard-container">
-<div class="keyboard" id="keyboard"></div>
-</div>
  
 <div class="right-controls">
 <div class="octave-switch">
@@ -302,6 +306,12 @@ box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 <button class="octave-btn active" data-octave="0">0</button>
 <button class="octave-btn" data-octave="1">+1</button>
 </div>
+</div>
+</div>
+ 
+<div class="keyboard-area">
+<div class="keyboard-container">
+<div class="keyboard" id="keyboard"></div>
 </div>
 </div>
  
