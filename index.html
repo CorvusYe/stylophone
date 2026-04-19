@@ -943,8 +943,8 @@ if (this.currentNote === null) {
 // 没有当前音在播放，开始渐变
 let fadeSpeed;
 if (this.sustainOn) {
-// 延音开启时，速度变慢
-fadeSpeed = 0.015;
+// 延音开启时，速度变得更慢，渐变时间更长
+fadeSpeed = 0.008;
 } else {
 // 正常速度
 fadeSpeed = 0.04;
