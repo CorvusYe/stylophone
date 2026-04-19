@@ -123,7 +123,6 @@ padding: 8px;
 display: flex;
 flex-direction: column;
 align-items: center;
-gap: 8px;
 }
  
 .transpose-container {
@@ -131,6 +130,7 @@ display: flex;
 flex-direction: column;
 align-items: center;
 gap: 4px;
+z-index: 10;
 }
  
 .transpose-label {
@@ -149,11 +149,11 @@ height: 40px;
 width: 100%;
 height: 100%;
 border-radius: 50%;
-background: linear-gradient(145deg, #444444 0%, #2a2a2a 50%, #1a1a1a 100%);
-border: 2px solid #555555;
+background: linear-gradient(145deg, #5a5a5a 0%, #3a3a3a 50%, #2a2a2a 100%);
+border: 2px solid #777777;
 box-shadow: 
-0 2px 8px rgba(0, 0, 0, 0.5),
-inset 0 1px 0 rgba(255, 255, 255, 0.1);
+0 3px 10px rgba(0, 0, 0, 0.6),
+inset 0 1px 0 rgba(255, 255, 255, 0.2);
 cursor: grab;
 display: flex;
 align-items: center;
@@ -361,13 +361,7 @@ box-shadow: 0 0 8px rgba(153, 51, 255, 0.6);
 </head>
 <body>
 <div class="stylophone-container" id="stylophone">
-<div class="speaker-section" id="speaker">
-<div class="speaker-logo">stylophone</div>
-</div>
- 
-<div class="controls-bar">
-<div class="left-controls">
-<div class="transpose-container">
+<div class="transpose-container" style="position: absolute; top: 15px; left: 20px;">
 <div class="transpose-label">Transpose</div>
 <div class="knob-container">
 <div class="knob" id="transposeKnob" style="transform: rotate(0deg);">
@@ -376,6 +370,12 @@ box-shadow: 0 0 8px rgba(153, 51, 255, 0.6);
 </div>
 <div class="transpose-value" id="transposeValue">0</div>
 </div>
+<div class="speaker-section" id="speaker">
+<div class="speaker-logo">stylophone</div>
+</div>
+ 
+<div class="controls-bar">
+<div class="left-controls">
 <div class="power-switch">
 <div class="hand-switch">
 <button class="hand-btn" data-power="off">OFF</button>
