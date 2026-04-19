@@ -28,151 +28,89 @@ user-select: none;
  
 .stylophone-container {
 width: 100%;
-max-width: 700px;
-background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 50%, #1e3a8a 100%);
-border-radius: 15px;
+max-width: 650px;
+background: linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 50%, #0d0d0d 100%);
+border-radius: 8px;
 box-shadow: 
-0 20px 60px rgba(0, 0, 0, 0.6),
-inset 0 2px 4px rgba(255, 255, 255, 0.1);
+0 25px 70px rgba(0, 0, 0, 0.7),
+inset 0 1px 0 rgba(255, 255, 255, 0.1),
+inset 0 -1px 0 rgba(0, 0, 0, 0.3);
 position: relative;
-padding: 20px;
-aspect-ratio: 4/3;
+padding: 25px;
+aspect-ratio: 3/2;
 }
  
-.top-section {
-display: flex;
-justify-content: space-between;
-align-items: flex-start;
-margin-bottom: 15px;
-}
- 
-.brand {
-color: #ffffff;
-font-size: 28px;
-font-weight: bold;
-text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-letter-spacing: 2px;
-}
- 
-.model {
-color: #fbbf24;
-font-size: 18px;
-font-weight: bold;
-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
- 
-.speaker {
-width: 40%;
-height: 120px;
-background: linear-gradient(180deg, #4b5563 0%, #374151 100%);
-border-radius: 5px;
+.speaker-section {
+width: 100%;
+height: 110px;
+background: linear-gradient(180deg, #4a4a4a 0%, #333333 100%);
+border-radius: 4px 4px 0 0;
 display: grid;
-grid-template-columns: repeat(8, 1fr);
-gap: 2px;
-padding: 10px;
-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+grid-template-columns: repeat(12, 1fr);
+grid-template-rows: repeat(6, 1fr);
+gap: 3px;
+padding: 12px;
+box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+position: relative;
+margin-bottom: 10px;
 }
  
 .speaker-hole {
 width: 100%;
 height: 100%;
-background: #1f2937;
-border-radius: 50%;
+background: #1a1a1a;
+border-radius: 2px;
 }
  
-.controls-panel {
-display: flex;
-gap: 10px;
-margin-bottom: 15px;
-flex-wrap: wrap;
-}
- 
-.control-group {
-background: rgba(0, 0, 0, 0.2);
-padding: 8px 12px;
-border-radius: 5px;
-}
- 
-.control-label {
-color: #ffffff;
-font-size: 10px;
-margin-bottom: 5px;
-text-align: center;
-}
- 
-.knobs {
-display: flex;
-gap: 10px;
-}
- 
-.knob {
-width: 28px;
-height: 28px;
-background: linear-gradient(145deg, #374151 0%, #1f2937 100%);
-border-radius: 50%;
-border: 2px solid #4b5563;
-cursor: pointer;
-position: relative;
-}
- 
-.knob::after {
-content: '';
+.speaker-logo {
 position: absolute;
-top: 4px;
-left: 50%;
-transform: translateX(-50%);
-width: 2px;
-height: 10px;
-background: #fbbf24;
+right: 20px;
+top: 50%;
+transform: translateY(-50%);
+color: #ffffff;
+font-size: 16px;
+font-weight: bold;
+font-style: italic;
+text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
  
 .switch {
-width: 20px;
-height: 12px;
-background: #374151;
-border-radius: 3px;
+width: 35px;
+height: 15px;
+background: #333333;
+border-radius: 2px;
 position: relative;
 cursor: pointer;
+border: 1px solid #444444;
 }
  
 .switch::after {
 content: '';
 position: absolute;
-top: 1px;
-left: 1px;
-width: 8px;
-height: 10px;
-background: #fbbf24;
-border-radius: 2px;
-transition: transform 0.2s;
+top: 2px;
+left: 2px;
+width: 14px;
+height: 11px;
+background: linear-gradient(180deg, #ff6600 0%, #cc4400 100%);
+border-radius: 1px;
+transition: transform 0.15s;
 }
  
 .switch.on::after {
-transform: translateX(10px);
+transform: translateX(17px);
 }
  
-.stylus-holder {
-width: 100%;
-height: 30px;
-background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
-border-radius: 5px;
-margin-bottom: 10px;
-display: flex;
-align-items: center;
-justify-content: center;
-color: #fbbf24;
-font-size: 12px;
-font-weight: bold;
-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+.keyboard-area {
+background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);
+border-radius: 4px;
+padding: 15px 20px;
+box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+position: relative;
 }
  
 .keyboard-container {
-background: linear-gradient(180deg, #e5e7eb 0%, #d1d5db 100%);
-border-radius: 8px;
-padding: 15px;
-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 position: relative;
-height: 120px;
+height: 70px;
 }
  
 .keyboard {
@@ -183,36 +121,49 @@ height: 100%;
  
 .key {
 position: absolute;
-border: 1px solid #6b7280;
-border-radius: 2px;
+background: linear-gradient(180deg, #e0e0e0 0%, #c0c0c0 50%, #a0a0a0 100%);
+border: 1px solid #888888;
+border-radius: 6px 6px 8px 8px;
 cursor: pointer;
 display: flex;
 align-items: flex-end;
 justify-content: center;
-padding-bottom: 8px;
-font-size: 9px;
-color: #374151;
+padding-bottom: 6px;
+font-size: 11px;
+color: #333333;
 font-weight: bold;
-transition: all 0.1s;
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+transition: all 0.08s;
+box-shadow: 
+0 2px 3px rgba(0, 0, 0, 0.2),
+inset 0 1px 0 rgba(255, 255, 255, 0.5),
+inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 z-index: 1;
 }
  
 .key:hover {
-opacity: 0.9;
+background: linear-gradient(180deg, #f0f0f0 0%, #d0d0d0 50%, #b0b0b0 100%);
 }
  
 .key.active {
-background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%) !important;
-border-color: #fbbf24;
-box-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
+background: linear-gradient(180deg, #ffd700 0%, #ffb000 100%);
+border-color: #ff8c00;
+box-shadow: 
+0 0 12px rgba(255, 215, 0, 0.6),
+inset 0 1px 0 rgba(255, 255, 255, 0.7);
+transform: translateY(1px);
 }
  
-.bottom-controls {
+.keyboard-area {
 display: flex;
-justify-content: space-between;
+gap: 15px;
 align-items: center;
-margin-top: 10px;
+}
+ 
+.left-controls {
+width: 70px;
+display: flex;
+flex-direction: column;
+align-items: center;
 }
  
 .power-switch {
@@ -221,19 +172,46 @@ flex-direction: column;
 align-items: center;
 }
  
-.power-label {
-color: #ffffff;
-font-size: 8px;
-margin-top: 3px;
+.power-labels {
+display: flex;
+gap: 10px;
+margin-top: 4px;
+font-size: 9px;
+color: #666666;
+font-weight: bold;
 }
  
-.volume-indicator {
+.right-controls {
+width: 80px;
 display: flex;
 flex-direction: column;
 align-items: center;
-color: #fbbf24;
-font-size: 12px;
+}
+ 
+.octave-switch {
+display: flex;
+flex-direction: column;
+gap: 3px;
+}
+ 
+.octave-btn {
+width: 50px;
+height: 18px;
+background: linear-gradient(180deg, #444444 0%, #333333 100%);
+border: 1px solid #555555;
+border-radius: 3px;
+color: #ffffff;
+font-size: 9px;
 font-weight: bold;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+ 
+.octave-btn.active {
+background: linear-gradient(180deg, #ff6600 0%, #cc4400 100%);
+border-color: #ff6600;
 }
  
 .note-display {
@@ -242,8 +220,8 @@ top: 50%;
 left: 50%;
 transform: translate(-50%, -50%);
 font-size: 72px;
-color: #fbbf24;
-text-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
+color: #ffd700;
+text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
 opacity: 0;
 pointer-events: none;
 z-index: 100;
@@ -256,181 +234,55 @@ opacity: 1;
  
 .stylus {
 position: fixed;
-width: 6px;
-height: 50px;
-background: linear-gradient(180deg, #1f2937 0%, #374151 50%, #1f2937 100%);
-border-radius: 0 0 3px 3px;
+width: 8px;
+height: 120px;
+background: linear-gradient(90deg, #1a1a1a 0%, #333333 50%, #1a1a1a 100%);
+border-radius: 4px;
 pointer-events: none;
 z-index: 1000;
-transform: translate(-50%, -100%);
-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+transform: translate(-50%, -100%) rotate(-30deg);
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
  
 .stylus-tip {
 position: absolute;
-bottom: -3px;
+bottom: -5px;
 left: 50%;
 transform: translateX(-50%);
-width: 10px;
-height: 10px;
-background: radial-gradient(circle, #fbbf24 0%, #f59e0b 100%);
+width: 14px;
+height: 14px;
+background: radial-gradient(circle, #ffd700 0%, #b8860b 100%);
 border-radius: 50%;
-box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
-}
- 
-.octave-controls {
-display: flex;
-gap: 5px;
-align-items: center;
-}
- 
-.octave-btn {
-width: 25px;
-height: 25px;
-background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
-border: 2px solid #4b5563;
-border-radius: 3px;
-color: #fbbf24;
-font-size: 10px;
-font-weight: bold;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-}
- 
-.octave-btn.active {
-background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
-border-color: #fbbf24;
-}
- 
-.timbre-controls {
-display: flex;
-gap: 5px;
-}
- 
-.timbre-btn {
-width: 40px;
-height: 20px;
-background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
-border: 1px solid #4b5563;
-border-radius: 3px;
-color: #9ca3af;
-font-size: 8px;
-font-weight: bold;
-cursor: pointer;
-}
- 
-.timbre-btn.active {
-background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
-border-color: #fbbf24;
-color: #1f2937;
+box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 }
 </style>
 </head>
 <body>
 <div class="stylophone-container" id="stylophone">
-<div class="top-section">
-<div>
-<div class="brand">Stylophone</div>
-<div class="model">GEN X-2</div>
-</div>
-<div class="speaker">
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-<div class="speaker-hole"></div>
-</div>
+<div class="speaker-section" id="speaker">
+<div class="speaker-logo">stylophone</div>
 </div>
  
-<div class="controls-panel">
-<div class="control-group">
-<div class="control-label">ENVELOPE</div>
-<div class="knobs">
-<div class="knob" title="ATTACK"></div>
-<div class="knob" title="PITCH"></div>
-<div class="knob" title="DECAY"></div>
-</div>
-</div>
-<div class="control-group">
-<div class="control-label">LFO</div>
-<div class="knobs">
-<div class="knob" title="WAVE"></div>
-<div class="knob" title="RATE"></div>
-<div class="knob" title="DEPTH"></div>
-</div>
-</div>
-<div class="control-group">
-<div class="control-label">FILTER</div>
-<div class="knobs">
-<div class="knob" title="CUTOFF"></div>
-<div class="knob" title="RES"></div>
-</div>
-</div>
-<div class="control-group">
-<div class="control-label">DELAY</div>
-<div class="knobs">
-<div class="switch" id="delaySwitch"></div>
-<div class="knob" title="TIME"></div>
-<div class="knob" title="REPEATS"></div>
-<div class="knob" title="LEVEL"></div>
+<div class="keyboard-area">
+<div class="left-controls">
+<div class="power-switch">
+<div class="switch on" id="powerSwitch"></div>
+<div class="power-labels">
+<span>OFF</span>
+<span>ON</span>
 </div>
 </div>
 </div>
- 
-<div class="stylus-holder">
-STYLUS
-</div>
- 
 <div class="keyboard-container">
 <div class="keyboard" id="keyboard"></div>
 </div>
  
-<div class="bottom-controls">
-<div class="power-switch">
-<div class="switch on" id="powerSwitch"></div>
-<div class="power-label">OFF/ON</div>
-</div>
-<div class="octave-controls">
+<div class="right-controls">
+<div class="octave-switch">
 <button class="octave-btn" data-octave="-1">-1</button>
 <button class="octave-btn active" data-octave="0">0</button>
 <button class="octave-btn" data-octave="1">+1</button>
 </div>
-<div class="timbre-controls">
-<button class="timbre-btn active" data-wave="square">SQU</button>
-<button class="timbre-btn" data-wave="triangle">TRI</button>
-<button class="timbre-btn" data-wave="sawtooth">SAW</button>
-</div>
-<div class="volume-indicator">
-VOL
 </div>
 </div>
  
@@ -450,7 +302,6 @@ this.gainNode = null;
 this.isPlaying = false;
 this.currentNote = null;
 this.octave = 0;
-this.waveform = 'square';
 this.powerOn = true;
 // 24键：C3到B4（两个八度）
 this.noteNames = [
@@ -467,9 +318,19 @@ this.init();
 }
  
 init() {
+this.createSpeaker();
 this.createKeyboard();
 this.setupEventListeners();
 this.animate();
+}
+ 
+createSpeaker() {
+const speaker = document.getElementById('speaker');
+for (let i = 0; i < 72; i++) {
+const hole = document.createElement('div');
+hole.className = 'speaker-hole';
+speaker.appendChild(hole);
+}
 }
  
 initAudio() {
@@ -487,10 +348,10 @@ const numKeys = 24;
 for (let i = 0; i < numKeys; i++) {
 const key = this.createKey(i);
 const keyWidth = 100 / numKeys;
-key.style.left = (i * keyWidth) + '%';
-key.style.top = '10px';
-key.style.width = keyWidth + '%';
-key.style.height = '90px';
+key.style.left = `calc(${i * keyWidth}% + 1px)`;
+key.style.top = '5px';
+key.style.width = `calc(${keyWidth}% - 2px)`;
+key.style.height = '60px';
 keyboard.appendChild(key);
 this.keys.push({ element: key, noteIndex: i });
 }
@@ -500,13 +361,9 @@ createKey(noteIndex) {
 const key = document.createElement('div');
 key.className = 'key';
 key.dataset.noteIndex = noteIndex;
-key.textContent = this.noteNames[noteIndex];
-// 交替颜色，像真实Stylophone的金属按键
-if (noteIndex % 2 === 0) {
-key.style.background = 'linear-gradient(180deg, #d1d5db 0%, #9ca3af 100%)';
-} else {
-key.style.background = 'linear-gradient(180deg, #e5e7eb 0%, #c4c4c4 100%)';
-}
+// 显示数字1-12，然后重复
+const num = (noteIndex % 12) + 1;
+key.textContent = num;
 return key;
 }
  
@@ -541,25 +398,12 @@ btn.classList.add('active');
 this.octave = parseInt(btn.dataset.octave);
 });
 });
-document.querySelectorAll('.timbre-btn').forEach(btn => {
-btn.addEventListener('click', () => {
-document.querySelectorAll('.timbre-btn').forEach(b => b.classList.remove('active'));
-btn.classList.add('active');
-this.waveform = btn.dataset.wave;
-if (this.oscillator) {
-this.oscillator.type = this.waveform;
-}
-});
-});
 document.getElementById('powerSwitch').addEventListener('click', (e) => {
 e.target.classList.toggle('on');
 this.powerOn = e.target.classList.contains('on');
 if (!this.powerOn && this.isPlaying) {
 this.stopOscillator();
 }
-});
-document.getElementById('delaySwitch').addEventListener('click', (e) => {
-e.target.classList.toggle('on');
 });
 document.addEventListener('click', () => this.initAudio(), { once: true });
 document.addEventListener('touchstart', () => this.initAudio(), { once: true });
@@ -619,15 +463,17 @@ if (!this.audioContext) return;
 this.stopOscillator();
 this.oscillator = this.audioContext.createOscillator();
 this.gainNode = this.audioContext.createGain();
-this.oscillator.type = this.waveform;
+// 经典Stylophone使用方形波
+this.oscillator.type = 'square';
 this.oscillator.frequency.setValueAtTime(
 this.getFrequency(noteIndex),
 this.audioContext.currentTime
 );
 this.oscillator.connect(this.gainNode);
 this.gainNode.connect(this.audioContext.destination);
+// 经典Stylophone的音量包络
 this.gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-this.gainNode.gain.linearRampToValueAtTime(0.3, this.audioContext.currentTime + 0.05);
+this.gainNode.gain.linearRampToValueAtTime(0.25, this.audioContext.currentTime + 0.03);
 this.oscillator.start();
 this.showNote(this.noteNames[noteIndex % 12] + (3 + Math.floor(noteIndex / 12) + this.octave));
 }
