@@ -577,13 +577,18 @@ this.checkKeyHit(e.clientX, e.clientY);
  
 updateStylus() {
 const stylus = document.getElementById('stylus');
-// 计算角度
+// 计算角度，确保笔尖指向左上方
 const dx = this.mouseX - this.stylusBaseX;
 const dy = this.mouseY - this.stylusBaseY;
+// 基础角度计算
 let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-// 交换左右手的倾斜方向
-if (this.handedness === 'left') {
+// 调整倾斜方向：确保笔尖朝向左上方
+if (this.handedness === 'right') {
+// 右手：笔在右侧，笔尖朝左上方
 angle += 180;
+} else {
+// 左手：笔在左侧，笔尖朝右上方
+angle += 0;
 }
 stylus.style.left = this.mouseX + 'px';
 stylus.style.top = this.mouseY + 'px';
