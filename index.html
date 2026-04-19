@@ -296,6 +296,43 @@ background: radial-gradient(circle, #ffd700 0%, #b8860b 100%);
 border-radius: 50%;
 box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 }
+ 
+.vib-switch-container {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 2px;
+}
+ 
+.vib-label {
+font-size: 9px;
+color: #aaaaaa;
+font-weight: bold;
+text-transform: uppercase;
+}
+ 
+.vib-btn {
+padding: 4px 12px;
+background: linear-gradient(180deg, #444444 0%, #333333 100%);
+border: 1px solid #555555;
+border-radius: 3px;
+color: #aaaaaa;
+font-size: 9px;
+font-weight: bold;
+cursor: pointer;
+transition: all 0.2s;
+}
+ 
+.vib-btn:hover {
+background: linear-gradient(180deg, #555555 0%, #444444 100%);
+}
+ 
+.vib-btn.active {
+background: linear-gradient(180deg, #9933ff 0%, #6600cc 100%);
+border-color: #9933ff;
+color: #ffffff;
+box-shadow: 0 0 8px rgba(153, 51, 255, 0.6);
+}
 </style>
 </head>
 <body>
@@ -320,6 +357,11 @@ box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 <button class="hand-btn" data-hand="right">左手</button>
 <button class="hand-btn active" data-hand="left">右手</button>
 </div>
+</div>
+ 
+<div class="vib-switch-container">
+<span class="vib-label">Vibrato</span>
+<button class="vib-btn" id="vibBtn">VIB</button>
 </div>
  
 <div class="right-controls">
@@ -350,11 +392,14 @@ constructor() {
 this.audioContext = null;
 this.oscillator = null;
 this.gainNode = null;
+this.vibratoOscillator = null;
+this.vibratoGain = null;
 this.isPlaying = false;
 this.currentNote = null;
 this.octave = 0;
 this.powerOn = true;
 this.handedness = 'left';
+this.vibratoOn = false;
 this.stylusBaseX = window.innerWidth / 2;
 this.stylusBaseY = 50;
 this.mouseX = window.innerWidth / 2;
@@ -582,6 +627,12 @@ if (!this.powerOn && this.isPlaying) {
 this.stopOscillator();
 }
 });
+ 
+document.getElementById('vibBtn').addEventListener('click', (e) => {
+this.vibratoOn = !this.vibratoOn;
+e.target.classList.toggle('active', this.vibratoOn);
+});
+ 
 document.addEventListener('click', () => this.initAudio(), { once: true });
 document.addEventListener('touchstart', () => this.initAudio(), { once: true });
 }
@@ -769,10 +820,22 @@ this.oscillator = this.audioContext.createOscillator();
 this.gainNode = this.audioContext.createGain();
 // 经典Stylophone使用方形波
 this.oscillator.type = 'square';
+const baseFreq = this.getFrequency(noteIndex);
 this.oscillator.frequency.setValueAtTime(
-this.getFrequency(noteIndex),
+baseFreq,
 this.audioContext.currentTime
 );
+if (this.vibratoOn) {
+// 创建颤音振荡器（LFO）
+this.vibratoOscillator = this.audioContext.createOscillator();
+this.vibratoGain = this.audioContext.createGain();
+this.vibratoOscillator.type = 'sine';
+this.vibratoOscillator.frequency.setValueAtTime(5, this.audioContext.currentTime); // 5Hz 的颤音速度
+this.vibratoGain.gain.setValueAtTime(baseFreq * 0.05, this.audioContext.currentTime); // 5% 的音高变化
+this.vibratoOscillator.connect(this.vibratoGain);
+this.vibratoGain.connect(this.oscillator.frequency);
+this.vibratoOscillator.start();
+}
 this.oscillator.connect(this.gainNode);
 this.gainNode.connect(this.audioContext.destination);
 // 经典Stylophone的音量包络
@@ -788,6 +851,11 @@ this.gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.current
 this.oscillator.stop(this.audioContext.currentTime + 0.1);
 this.oscillator = null;
 this.gainNode = null;
+}
+if (this.vibratoOscillator && this.vibratoGain) {
+this.vibratoOscillator.stop(this.audioContext.currentTime + 0.1);
+this.vibratoOscillator = null;
+this.vibratoGain = null;
 }
 }
  
