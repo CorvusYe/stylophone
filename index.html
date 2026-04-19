@@ -396,7 +396,7 @@ box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 <div class="stylus-tip"></div>
 </div>
 <svg class="stylus-wire" id="stylusWire">
-<line id="wireLine" stroke="#ffd700" stroke-width="2" fill="none" />
+<path id="wirePath" stroke="#ffd700" stroke-width="2" fill="none" stroke-linecap="round" />
 </svg>
  
 <script>
@@ -599,11 +599,22 @@ stylus.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
 }
  
 updateWire() {
-const wireLine = document.getElementById('wireLine');
-wireLine.setAttribute('x1', this.stylusBaseX);
-wireLine.setAttribute('y1', this.stylusBaseY);
-wireLine.setAttribute('x2', this.mouseX);
-wireLine.setAttribute('y2', this.mouseY);
+const wirePath = document.getElementById('wirePath');
+// 计算贝塞尔曲线控制点，创建自然弯曲
+const dx = this.mouseX - this.stylusBaseX;
+const dy = this.mouseY - this.stylusBaseY;
+const distance = Math.sqrt(dx * dx + dy * dy);
+// 控制点距离
+const controlDistance = distance * 0.3;
+// 计算垂直方向的控制点
+const angle = Math.atan2(dy, dx);
+const controlOffsetX = Math.sin(angle) * controlDistance;
+const controlOffsetY = -Math.cos(angle) * controlDistance;
+// 创建贝塞尔曲线路径
+const path = `M ${this.stylusBaseX} ${this.stylusBaseY} Q 
+${this.stylusBaseX + controlOffsetX} ${this.stylusBaseY + controlOffsetY} 
+${this.mouseX} ${this.mouseY}`;
+wirePath.setAttribute('d', path);
 }
  
 handleMouseUp() {
