@@ -461,11 +461,10 @@ calculateKeyPositions() {
 this.keyPositions = [];
 // 总范围是0到12
 this.totalWidth = 12;
-// 下排键（白键/自然音）：从左到右C, D, E, F, G, A, B, C, D, E, F, G, A
-// 按照钢琴键盘，每个白键对应一个半音位置
-// 从C4开始（中央C）
+// 下排键（白键/数字）：1,2,3,4,5,6,7,8,9,10,11,12,13
+// 对应：1=C, 2=D, 3=E, 4=F, 5=G, 6=A, 7=B, 8=C, 9=D, 10=E, 11=F, 12=G, 13=A
 const bottomNotePositions = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19, 21];
-const bottomNoteNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'A'];
+const bottomNoteNames = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'];
 for (let i = 0; i < 13; i++) {
 this.keyPositions.push({
 noteIndex: bottomNotePositions[i],
@@ -478,16 +477,16 @@ height: 0.9,
 position: bottomNotePositions[i] // 半音位置，0=C4
 });
 }
-// 上排键（黑键/升调）：0.5-1.5=C#, 2.5-3.5=D#, 3.5-4.5=F#, 5.5-6.5=G#, 6.5-7.5=A#, 7.5-8.5=C#, 9.5-10.5=D#, 10.5-11.5=F#
+// 上排键（黑键/点五）：1.5, 2.5, 3.5, 5.5, 6.5, 8.5, 9.5, 10.5
 const topKeyPositions = [
-{start: 0.5, end: 1.5, position: 1, noteName: 'C#'},
-{start: 2.5, end: 3.5, position: 3, noteName: 'D#'},
-{start: 3.5, end: 4.5, position: 6, noteName: 'F#'},
-{start: 5.5, end: 6.5, position: 8, noteName: 'G#'},
-{start: 6.5, end: 7.5, position: 10, noteName: 'A#'},
-{start: 7.5, end: 8.5, position: 13, noteName: 'C#'},
-{start: 9.5, end: 10.5, position: 15, noteName: 'D#'},
-{start: 10.5, end: 11.5, position: 18, noteName: 'F#'}
+{start: 0.5, end: 1.5, position: 1, noteName: '1.5'},
+{start: 2.5, end: 3.5, position: 3, noteName: '2.5'},
+{start: 3.5, end: 4.5, position: 6, noteName: '3.5'},
+{start: 5.5, end: 6.5, position: 8, noteName: '5.5'},
+{start: 6.5, end: 7.5, position: 10, noteName: '6.5'},
+{start: 7.5, end: 8.5, position: 13, noteName: '8.5'},
+{start: 9.5, end: 10.5, position: 15, noteName: '9.5'},
+{start: 10.5, end: 11.5, position: 18, noteName: '10.5'}
 ];
 for (let i = 0; i < topKeyPositions.length; i++) {
 const key = topKeyPositions[i];
@@ -534,6 +533,11 @@ this.ctx.fill();
 this.ctx.strokeStyle = '#998877';
 this.ctx.lineWidth = 1;
 this.ctx.stroke();
+// 绘制数字标记
+this.ctx.fillStyle = '#333';
+this.ctx.font = 'bold 12px monospace';
+this.ctx.textAlign = 'center';
+this.ctx.fillText(key.noteName, x + keyWidth / 2, y + keyHeight - 8);
 }
 // 后绘制上排键（8个键，有错落感），这样上排会覆盖下排
 for (let i = 13; i < 21; i++) {
@@ -559,6 +563,11 @@ this.ctx.fill();
 this.ctx.strokeStyle = '#998877';
 this.ctx.lineWidth = 1;
 this.ctx.stroke();
+// 绘制数字标记
+this.ctx.fillStyle = '#333';
+this.ctx.font = 'bold 10px monospace';
+this.ctx.textAlign = 'center';
+this.ctx.fillText(key.noteName, x + keyWidth / 2, y + keyHeight - 6);
 }
 // 绘制键盘边框
 this.ctx.strokeStyle = '#333';
@@ -782,6 +791,11 @@ this.ctx.strokeStyle = '#998877';
 }
 this.ctx.lineWidth = 1;
 this.ctx.stroke();
+// 绘制数字标记
+this.ctx.fillStyle = '#333';
+this.ctx.font = 'bold 12px monospace';
+this.ctx.textAlign = 'center';
+this.ctx.fillText(key.noteName, x + keyWidth / 2, y + keyHeight - 8);
 }
 // 后绘制所有上排键，覆盖在下排键上（后8个，索引13-20）
 for (let i = 13; i < 21; i++) {
@@ -812,6 +826,11 @@ this.ctx.strokeStyle = '#998877';
 }
 this.ctx.lineWidth = 1;
 this.ctx.stroke();
+// 绘制数字标记
+this.ctx.fillStyle = '#333';
+this.ctx.font = 'bold 10px monospace';
+this.ctx.textAlign = 'center';
+this.ctx.fillText(key.noteName, x + keyWidth / 2, y + keyHeight - 6);
 }
 // 绘制键盘边框
 this.ctx.strokeStyle = '#333';
