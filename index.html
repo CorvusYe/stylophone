@@ -358,6 +358,27 @@ border-color: #9933ff;
 color: #ffffff;
 box-shadow: 0 0 8px rgba(153, 51, 255, 0.6);
 }
+ 
+.keyboard-shortcuts {
+display: flex;
+flex-wrap: wrap;
+gap: 8px 16px;
+justify-content: center;
+padding: 10px;
+font-size: 11px;
+color: #888888;
+text-align: center;
+}
+ 
+.keyboard-shortcuts kbd {
+background: #333333;
+padding: 2px 6px;
+border-radius: 3px;
+font-family: monospace;
+font-size: 10px;
+color: #ffffff;
+border: 1px solid #555555;
+}
 </style>
 </head>
 <body>
@@ -420,6 +441,14 @@ box-shadow: 0 0 8px rgba(153, 51, 255, 0.6);
 </div>
  
 <div class="note-display" id="noteDisplay"></div>
+<div class="keyboard-shortcuts">
+<span>Keyboard shortcuts:</span>
+<span><kbd>V</kbd> - toggle Vibrato</span>
+<span><kbd>S</kbd> - toggle Sustain</span>
+<span><kbd>Z</kbd> - Low octave</span>
+<span><kbd>X</kbd> - Mid octave</span>
+<span><kbd>C</kbd> - High octave</span>
+</div>
 </div>
  
 <div class="stylus" id="stylus">
