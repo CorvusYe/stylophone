@@ -193,6 +193,39 @@ flex-direction: column;
 align-items: center;
 }
  
+.center-controls {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+ 
+.hand-switch {
+display: flex;
+gap: 5px;
+}
+ 
+.hand-btn {
+padding: 4px 12px;
+background: linear-gradient(180deg, #444444 0%, #333333 100%);
+border: 1px solid #555555;
+border-radius: 3px;
+color: #aaaaaa;
+font-size: 10px;
+font-weight: bold;
+cursor: pointer;
+transition: all 0.2s;
+}
+ 
+.hand-btn:hover {
+background: linear-gradient(180deg, #555555 0%, #444444 100%);
+}
+ 
+.hand-btn.active {
+background: linear-gradient(180deg, #ff6600 0%, #cc4400 100%);
+border-color: #ff6600;
+color: #ffffff;
+}
+ 
 .power-switch {
 display: flex;
 flex-direction: column;
@@ -218,6 +251,40 @@ align-items: center;
 display: flex;
 flex-direction: row;
 gap: 3px;
+}
+ 
+.stylus-wire {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+pointer-events: none;
+z-index: 999;
+}
+ 
+.stylus {
+position: fixed;
+width: 8px;
+height: 100px;
+background: linear-gradient(90deg, #1a1a1a 0%, #333333 50%, #1a1a1a 100%);
+border-radius: 4px;
+pointer-events: none;
+z-index: 1000;
+transform-origin: center bottom;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+ 
+.stylus-tip {
+position: absolute;
+bottom: -5px;
+left: 50%;
+transform: translateX(-50%);
+width: 14px;
+height: 14px;
+background: radial-gradient(circle, #ffd700 0%, #b8860b 100%);
+border-radius: 50%;
+box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 }
  
 .octave-btn {
@@ -300,6 +367,13 @@ box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 </div>
 </div>
  
+<div class="center-controls">
+<div class="hand-switch">
+<button class="hand-btn active" data-hand="left">左手</button>
+<button class="hand-btn" data-hand="right">右手</button>
+</div>
+</div>
+ 
 <div class="right-controls">
 <div class="octave-switch">
 <button class="octave-btn" data-octave="-1">-1</button>
@@ -321,6 +395,9 @@ box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
 <div class="stylus" id="stylus">
 <div class="stylus-tip"></div>
 </div>
+<svg class="stylus-wire" id="stylusWire">
+<line id="wireLine" stroke="#ffd700" stroke-width="2" fill="none" />
+</svg>
  
 <script>
 class StylophoneApp {
@@ -332,6 +409,11 @@ this.isPlaying = false;
 this.currentNote = null;
 this.octave = 0;
 this.powerOn = true;
+this.handedness = 'left';
+this.stylusBaseX = window.innerWidth / 2;
+this.stylusBaseY = 50;
+this.mouseX = window.innerWidth / 2;
+this.mouseY = window.innerHeight / 2;
 // 24键：C3到B4（两个八度）
 this.noteNames = [
 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B',
@@ -433,8 +515,11 @@ return baseFreq * Math.pow(2, octaveOffset + this.octave);
  
 setupEventListeners() {
 const container = document.getElementById('stylophone');
+// 计算触控笔固定点的位置
+this.updateStylusBase();
+window.addEventListener('resize', () => this.updateStylusBase());
 container.addEventListener('mousedown', (e) => this.handleMouseDown(e));
-container.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
 document.addEventListener('mouseup', () => this.handleMouseUp());
 container.addEventListener('touchstart', (e) => {
 e.preventDefault();
@@ -454,6 +539,14 @@ btn.classList.add('active');
 this.octave = parseInt(btn.dataset.octave);
 });
 });
+document.querySelectorAll('.hand-btn').forEach(btn => {
+btn.addEventListener('click', () => {
+document.querySelectorAll('.hand-btn').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+this.handedness = btn.dataset.hand;
+this.updateStylusBase();
+});
+});
 document.getElementById('powerSwitch').addEventListener('click', (e) => {
 e.target.classList.toggle('on');
 this.powerOn = e.target.classList.contains('on');
@@ -463,6 +556,18 @@ this.stopOscillator();
 });
 document.addEventListener('click', () => this.initAudio(), { once: true });
 document.addEventListener('touchstart', () => this.initAudio(), { once: true });
+}
+ 
+updateStylusBase() {
+const container = document.getElementById('stylophone');
+const rect = container.getBoundingClientRect();
+if (this.handedness === 'left') {
+this.stylusBaseX = rect.left - 30;
+this.stylusBaseY = rect.top + 50;
+} else {
+this.stylusBaseX = rect.right + 30;
+this.stylusBaseY = rect.top + 50;
+}
 }
  
 handleMouseDown(e) {
@@ -476,9 +581,29 @@ handleMouseMove(e) {
 this.mouseX = e.clientX;
 this.mouseY = e.clientY;
 this.updateStylus();
+this.updateWire();
 if (this.isPlaying && this.powerOn) {
 this.checkKeyHit(e.clientX, e.clientY);
 }
+}
+ 
+updateStylus() {
+const stylus = document.getElementById('stylus');
+// 计算角度
+const dx = this.mouseX - this.stylusBaseX;
+const dy = this.mouseY - this.stylusBaseY;
+const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+stylus.style.left = this.mouseX + 'px';
+stylus.style.top = this.mouseY + 'px';
+stylus.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
+}
+ 
+updateWire() {
+const wireLine = document.getElementById('wireLine');
+wireLine.setAttribute('x1', this.stylusBaseX);
+wireLine.setAttribute('y1', this.stylusBaseY);
+wireLine.setAttribute('x2', this.mouseX);
+wireLine.setAttribute('y2', this.mouseY);
 }
  
 handleMouseUp() {
@@ -583,15 +708,9 @@ display.classList.remove('show');
 }, 300);
 }
  
-updateStylus() {
-if (this.mouseX !== undefined && this.mouseY !== undefined) {
-const stylus = document.getElementById('stylus');
-stylus.style.left = this.mouseX + 'px';
-stylus.style.top = this.mouseY + 'px';
-}
-}
- 
 animate() {
+this.updateStylus();
+this.updateWire();
 requestAnimationFrame(() => this.animate());
 }
 }
