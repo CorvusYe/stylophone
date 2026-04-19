@@ -430,6 +430,8 @@ this.createKeyboard();
 this.setupEventListeners();
 this.activeKeyProgress = 0;
 this.lastActiveKey = null;
+this.fadeOutKey = null;
+this.fadeOutProgress = 0;
 this.animate();
 }
  
@@ -541,11 +543,17 @@ this.ctx.closePath();
 // 计算填充颜色
 let fillColor = '#f0e6d8';
 let strokeColor = '#998877';
+// 检查是否是当前激活键
 if (this.lastActiveKey && this.lastActiveKey.noteIndex === key.noteIndex && 
 this.lastActiveKey.type === key.type && this.activeKeyProgress > 0) {
-// 渐变混合颜色
 fillColor = this.interpolateColor('#f0e6d8', '#ffcc00', this.activeKeyProgress);
 strokeColor = this.interpolateColor('#998877', '#ff9900', this.activeKeyProgress);
+}
+// 检查是否是淡出键
+if (this.fadeOutKey && this.fadeOutKey.noteIndex === key.noteIndex && 
+this.fadeOutKey.type === key.type && this.fadeOutProgress > 0) {
+fillColor = this.interpolateColor('#f0e6d8', '#ffcc00', this.fadeOutProgress);
+strokeColor = this.interpolateColor('#998877', '#ff9900', this.fadeOutProgress);
 }
 // 填充颜色
 this.ctx.fillStyle = fillColor;
@@ -580,11 +588,17 @@ this.ctx.closePath();
 // 计算填充颜色
 let fillColor = '#f0e6d8';
 let strokeColor = '#998877';
+// 检查是否是当前激活键
 if (this.lastActiveKey && this.lastActiveKey.noteIndex === key.noteIndex && 
 this.lastActiveKey.type === key.type && this.activeKeyProgress > 0) {
-// 渐变混合颜色
 fillColor = this.interpolateColor('#f0e6d8', '#ffcc00', this.activeKeyProgress);
 strokeColor = this.interpolateColor('#998877', '#ff9900', this.activeKeyProgress);
+}
+// 检查是否是淡出键
+if (this.fadeOutKey && this.fadeOutKey.noteIndex === key.noteIndex && 
+this.fadeOutKey.type === key.type && this.fadeOutProgress > 0) {
+fillColor = this.interpolateColor('#f0e6d8', '#ffcc00', this.fadeOutProgress);
+strokeColor = this.interpolateColor('#998877', '#ff9900', this.fadeOutProgress);
 }
 // 填充颜色
 this.ctx.fillStyle = fillColor;
@@ -815,6 +829,11 @@ this.vibratoGain.gain.setValueAtTime(newFreq * 0.008, this.audioContext.currentT
 }
 // 更新显示和高亮
 if (this.currentNote !== key.noteIndex) {
+if (this.lastActiveKey && this.lastActiveKey.noteIndex !== key.noteIndex) {
+// 如果有上一个键，让它快速淡出
+this.fadeOutKey = this.lastActiveKey;
+this.fadeOutProgress = this.activeKeyProgress;
+}
 this.currentNote = key.noteIndex;
 this.lastActiveKey = key;
 this.activeKeyProgress = 1; // 完全激活状态
@@ -918,11 +937,31 @@ display.classList.remove('show');
 animate() {
 this.updateStylus();
 // 更新琴键激活进度
-if (this.activeKeyProgress > 0 && this.currentNote === null) {
-// 减缓慢渐变
-this.activeKeyProgress -= 0.05;
+if (this.activeKeyProgress > 0) {
+// 根据不同情况调整渐变速度
+if (this.currentNote === null) {
+// 没有当前音在播放，开始渐变
+let fadeSpeed;
+if (this.sustainOn) {
+// 延音开启时，速度变慢
+fadeSpeed = 0.015;
+} else {
+// 正常速度
+fadeSpeed = 0.04;
+}
+this.activeKeyProgress -= fadeSpeed;
 if (this.activeKeyProgress < 0) {
 this.activeKeyProgress = 0;
+}
+}
+}
+// 更新淡出键
+if (this.fadeOutProgress > 0) {
+// 淡出键总是快速淡出
+this.fadeOutProgress -= 0.15;
+if (this.fadeOutProgress < 0) {
+this.fadeOutProgress = 0;
+this.fadeOutKey = null;
 }
 }
 // 绘制键盘（带渐变效果）
