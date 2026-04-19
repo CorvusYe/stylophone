@@ -414,7 +414,19 @@ this.drawKeyboard();
 calculateKeyPositions() {
 // 计算每个键的位置和尺寸
 this.keyPositions = [];
+// 下排键：从0到15连续排列，延伸到上排位置
+for (let i = 0; i < 15; i++) {
+this.keyPositions.push({
+noteIndex: 10 + i,
+type: 'bottom',
+left: i / this.totalWidth,
+width: 1 / this.totalWidth,
+top: 0.05,
+height: 0.9
+});
+}
 // 上排键：0.5-1.5，1.5-2.5，3.5-4.5，4.5-5.5，5.5-6.5，7.5-8.5，8.5-9.5，10.5-11.5，11.5-12.5，12.5-13.5
+// 后添加，覆盖在上面
 const topKeyPositions = [
 {start: 0.5, end: 1.5, index: 0},
 {start: 1.5, end: 2.5, index: 1},
@@ -439,17 +451,6 @@ top: 0.05,
 height: 0.4
 });
 }
-// 下排键：从0到15连续排列
-for (let i = 0; i < 15; i++) {
-this.keyPositions.push({
-noteIndex: 10 + i,
-type: 'bottom',
-left: i / this.totalWidth,
-width: 1 / this.totalWidth,
-top: 0.5,
-height: 0.45
-});
-}
 }
  
 drawKeyboard() {
@@ -460,30 +461,8 @@ this.ctx.clearRect(0, 0, width, height);
 // 绘制键盘背景
 this.ctx.fillStyle = '#e0d8c8';
 this.ctx.fillRect(0, 0, width, height);
-// 绘制上排键（10个键，有错落感）
-for (let i = 0; i < 10; i++) {
-const key = this.keyPositions[i];
-const x = key.left * width;
-const y = key.top * height;
-const keyWidth = key.width * width;
-const keyHeight = key.height * height;
-// 绘制上排键形状
-this.ctx.beginPath();
-this.ctx.moveTo(x, y);
-this.ctx.lineTo(x, y + keyHeight);
-this.ctx.lineTo(x + keyWidth, y + keyHeight);
-this.ctx.lineTo(x + keyWidth, y);
-this.ctx.closePath();
-// 填充颜色
-this.ctx.fillStyle = '#f0e6d8';
-this.ctx.fill();
-// 描边
-this.ctx.strokeStyle = '#998877';
-this.ctx.lineWidth = 1;
-this.ctx.stroke();
-}
-// 绘制下排键（15个键，0-15连续）
-for (let i = 10; i < 25; i++) {
+// 先绘制下排键（15个键，0-15连续）
+for (let i = 0; i < 15; i++) {
 const key = this.keyPositions[i];
 const x = key.left * width;
 const y = key.top * height;
@@ -503,12 +482,34 @@ this.ctx.fill();
 this.ctx.strokeStyle = '#998877';
 this.ctx.lineWidth = 1;
 this.ctx.stroke();
-// 绘制数字0-14
+// 绘制数字0-14（在键的下半部分）
 this.ctx.fillStyle = '#554433';
 this.ctx.font = 'bold 12px Courier New';
 this.ctx.textAlign = 'center';
 this.ctx.textBaseline = 'middle';
-this.ctx.fillText((i - 10).toString(), x + keyWidth / 2, y + keyHeight / 2);
+this.ctx.fillText((i).toString(), x + keyWidth / 2, y + keyHeight * 0.75);
+}
+// 后绘制上排键（10个键，有错落感），这样上排会覆盖下排
+for (let i = 15; i < 25; i++) {
+const key = this.keyPositions[i];
+const x = key.left * width;
+const y = key.top * height;
+const keyWidth = key.width * width;
+const keyHeight = key.height * height;
+// 绘制上排键形状
+this.ctx.beginPath();
+this.ctx.moveTo(x, y);
+this.ctx.lineTo(x, y + keyHeight);
+this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.lineTo(x + keyWidth, y);
+this.ctx.closePath();
+// 填充颜色
+this.ctx.fillStyle = '#f0e6d8';
+this.ctx.fill();
+// 描边
+this.ctx.strokeStyle = '#998877';
+this.ctx.lineWidth = 1;
+this.ctx.stroke();
 }
 // 绘制键盘边框
 this.ctx.strokeStyle = '#333';
@@ -649,8 +650,24 @@ let hit = false;
 const rect = this.canvas.getBoundingClientRect();
 const x = (clientX - rect.left) / rect.width;
 const y = (clientY - rect.top) / rect.height;
-// 检测所有键
-for (let key of this.keyPositions) {
+// 先检测上排键（最后10个）
+for (let i = 15; i < this.keyPositions.length; i++) {
+const key = this.keyPositions[i];
+if (x >= key.left && x <= key.left + key.width &&
+y >= key.top && y <= key.top + key.height) {
+hit = true;
+const noteIndex = key.noteIndex;
+if (this.currentNote !== noteIndex) {
+this.currentNote = noteIndex;
+this.playNote(noteIndex);
+this.drawActiveKey(key);
+}
+return;
+}
+}
+// 再检测下排键
+for (let i = 0; i < 15; i++) {
+const key = this.keyPositions[i];
 if (x >= key.left && x <= key.left + key.width &&
 y >= key.top && y <= key.top + key.height) {
 hit = true;
@@ -700,7 +717,7 @@ this.ctx.fillStyle = '#554433';
 this.ctx.font = 'bold 12px Courier New';
 this.ctx.textAlign = 'center';
 this.ctx.textBaseline = 'middle';
-this.ctx.fillText((activeKey.noteIndex - 10).toString(), x + keyWidth / 2, y + keyHeight / 2);
+this.ctx.fillText((activeKey.noteIndex - 10).toString(), x + keyWidth / 2, y + keyHeight * 0.75);
 }
 }
  
