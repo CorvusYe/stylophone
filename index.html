@@ -137,13 +137,22 @@ transition: all 0.08s;
 box-sizing: border-box;
 }
  
-.white-key {
+.top-key {
 z-index: 1;
-/* 真实Stylophone白键形状：顶部有圆角和凹口 */
+/* 真实Stylophone上排键形状：顶部有圆角和凹口 */
 clip-path: polygon(
 8% 0%, 35% 0%, 40% 8%, 60% 8%, 65% 0%, 92% 0%, 100% 20%, 100% 100%, 0% 100%, 0% 20%
 );
 padding-bottom: 8px;
+}
+ 
+.bottom-key {
+z-index: 1;
+/* 真实Stylophone下排键形状：底部有圆角 */
+clip-path: polygon(
+0% 0%, 100% 0%, 100% 80%, 92% 100%, 65% 100%, 60% 92%, 40% 92%, 35% 100%, 8% 100%, 0% 80%
+);
+padding-top: 8px;
 }
  
 .black-key {
@@ -467,7 +476,7 @@ currentPosition += keyRatios[i - 12];
  
 createKey(noteIndex, position, ratio, totalRatio) {
 const key = document.createElement('div');
-key.className = 'key white-key';
+key.className = 'key top-key';
 key.dataset.noteIndex = noteIndex;
 const width = (ratio / totalRatio) * 100;
 const left = (position / totalRatio) * 100;
@@ -480,12 +489,12 @@ return key;
  
 createNumberKey(number, position, ratio, totalRatio) {
 const key = document.createElement('div');
-key.className = 'key white-key';
+key.className = 'key bottom-key';
 key.dataset.noteIndex = 12 + number;
 const width = (ratio / totalRatio) * 100;
 const left = (position / totalRatio) * 100;
-// 下排键稍微偏移，创造错落感
-key.style.left = `${left + 0.5}%`;
+// 下排键偏移，创造明显的交错感
+key.style.left = `${left + width * 0.5}%`;
 key.style.top = '45px';
 key.style.width = `${width}%`;
 key.style.height = '25px';
