@@ -1001,7 +1001,7 @@ const notePart = noteLabel.match(/[^\d]+/)[0];
 const octavePart = parseInt(noteLabel.match(/\d+/)[0]);
 noteLabel = notePart + (octavePart + this.octave);
 }
-this.showNote(noteLabel);
+// this.showNote(noteLabel); // 禁用音高显示
 }
 } else {
 if (this.currentNote !== null) {
