@@ -454,39 +454,29 @@ const keyboard = document.getElementById('keyboard');
 // 12个键的键盘布局
 const keyWidth = 100 / 12;
 for (let i = 0; i < 12; i++) {
-const key = this.createKey(i, i * keyWidth, keyWidth);
+const key = document.createElement('div');
+key.className = 'key white-key';
+key.dataset.noteIndex = i;
+key.style.left = `${i * keyWidth}%`;
+key.style.top = '5px';
+key.style.width = `${keyWidth}%`;
+key.style.height = '35px';
 keyboard.appendChild(key);
 this.keys.push({ element: key, noteIndex: i });
 }
 // 第二行（下排数字）
 for (let i = 12; i < 24; i++) {
-const key = this.createNumberKey(i - 12, (i - 12) * keyWidth, keyWidth);
+const key = document.createElement('div');
+key.className = 'key black-key';
+key.dataset.noteIndex = i;
+key.style.left = `${(i - 12) * keyWidth}%`;
+key.style.top = '45px';
+key.style.width = `${keyWidth}%`;
+key.style.height = '25px';
+key.textContent = i - 11;
 keyboard.appendChild(key);
 this.keys.push({ element: key, noteIndex: i });
 }
-}
- 
-createKey(noteIndex, left, width) {
-const key = document.createElement('div');
-key.className = 'key white-key';
-key.dataset.noteIndex = noteIndex;
-key.style.left = `${left}%`;
-key.style.top = '5px';
-key.style.width = `${width}%`;
-key.style.height = '35px';
-return key;
-}
- 
-createNumberKey(number, left, width) {
-const key = document.createElement('div');
-key.className = 'key bottom-key';
-key.dataset.noteIndex = 12 + number;
-key.style.left = `${left}%`;
-key.style.top = '45px';
-key.style.width = `${width}%`;
-key.style.height = '25px';
-key.textContent = number + 1;
-return key;
 }
  
 getFrequency(noteIndex) {
