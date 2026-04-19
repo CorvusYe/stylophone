@@ -929,14 +929,16 @@ this.oscillator.start();
  
 stopOscillator() {
 if (this.oscillator && this.gainNode) {
-const fadeTime = this.sustainOn ? 1.0 : 0.1; // 延音时1秒淡出，否则0.1秒
-this.gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + fadeTime);
-this.oscillator.stop(this.audioContext.currentTime + fadeTime);
+const fadeTime = this.sustainOn ? 1.5 : 0.3; // 延音时1.5秒淡出，否则0.3秒，让渐变更平滑
+const currentTime = this.audioContext.currentTime;
+// 使用线性渐变，让声音更自然地减弱
+this.gainNode.gain.linearRampToValueAtTime(0.0001, currentTime + fadeTime);
+this.oscillator.stop(currentTime + fadeTime);
 this.oscillator = null;
 this.gainNode = null;
 }
 if (this.vibratoOscillator && this.vibratoGain) {
-const fadeTime = this.sustainOn ? 1.0 : 0.1;
+const fadeTime = this.sustainOn ? 1.5 : 0.3;
 this.vibratoOscillator.stop(this.audioContext.currentTime + fadeTime);
 this.vibratoOscillator = null;
 this.vibratoGain = null;
