@@ -366,9 +366,9 @@ box-shadow: 0 0 8px rgba(153, 51, 255, 0.6);
  
 <div class="right-controls">
 <div class="octave-switch">
-<button class="octave-btn" data-octave="-1">-1</button>
-<button class="octave-btn active" data-octave="0">0</button>
-<button class="octave-btn" data-octave="1">+1</button>
+<button class="octave-btn" data-octave="-1">Low</button>
+<button class="octave-btn active" data-octave="0">Mid</button>
+<button class="octave-btn" data-octave="1">High</button>
 </div>
 </div>
 </div>
@@ -461,14 +461,16 @@ calculateKeyPositions() {
 this.keyPositions = [];
 // 总范围是0到12
 this.totalWidth = 12;
-// 下排键：1,2,3,4,5,6,7,8,9,10,11,12
-// 按照真实Stylophone图片
+// 下排键（白键）：按照真实Stylophone S1 Mid档
+// 1:C4,2:D4,3:E4,4:F4,5:G4,6:A4,7:B4,8:C5,9:D5,10:E5,11:F5,12:G5
 const bottomNotePositions = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19];
 const bottomNoteNames = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+const bottomNoteLabels = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5'];
 for (let i = 0; i < 12; i++) {
 this.keyPositions.push({
 noteIndex: bottomNotePositions[i],
 noteName: bottomNoteNames[i],
+noteLabel: bottomNoteLabels[i],
 type: 'bottom',
 left: i / this.totalWidth,
 width: 1 / this.totalWidth,
@@ -477,16 +479,17 @@ height: 0.9,
 position: bottomNotePositions[i] // 半音位置，0=C4
 });
 }
-// 上排键：1.5,3.5,4.5,6.5,7.5,8.5,10.5,11.5
+// 上排键（黑键）：按照真实Stylophone S1 Mid档
+// 1.5:C#4,2.5:D#4,4.5:F#4,5.5:G#4,6.5:A#4,8.5:C#5,9.5:D#5,11.5:F#5
 const topKeyPositions = [
-{start: 0.5, end: 1.5, position: 1, noteName: '1.5'},
-{start: 2.5, end: 3.5, position: 3, noteName: '3.5'},
-{start: 3.5, end: 4.5, position: 6, noteName: '4.5'},
-{start: 5.5, end: 6.5, position: 8, noteName: '6.5'},
-{start: 6.5, end: 7.5, position: 10, noteName: '7.5'},
-{start: 7.5, end: 8.5, position: 13, noteName: '8.5'},
-{start: 9.5, end: 10.5, position: 15, noteName: '10.5'},
-{start: 10.5, end: 11.5, position: 18, noteName: '11.5'}
+{start: 0.5, end: 1.5, position: 1, noteName: '1.5', noteLabel: 'C#4'},
+{start: 2.5, end: 3.5, position: 3, noteName: '2.5', noteLabel: 'D#4'},
+{start: 3.5, end: 4.5, position: 6, noteName: '4.5', noteLabel: 'F#4'},
+{start: 5.5, end: 6.5, position: 8, noteName: '5.5', noteLabel: 'G#4'},
+{start: 6.5, end: 7.5, position: 10, noteName: '6.5', noteLabel: 'A#4'},
+{start: 7.5, end: 8.5, position: 13, noteName: '8.5', noteLabel: 'C#5'},
+{start: 9.5, end: 10.5, position: 15, noteName: '9.5', noteLabel: 'D#5'},
+{start: 10.5, end: 11.5, position: 18, noteName: '11.5', noteLabel: 'F#5'}
 ];
 for (let i = 0; i < topKeyPositions.length; i++) {
 const key = topKeyPositions[i];
@@ -494,6 +497,7 @@ const width = (key.end - key.start) / this.totalWidth;
 this.keyPositions.push({
 noteIndex: key.position,
 noteName: key.noteName,
+noteLabel: key.noteLabel,
 type: 'top',
 left: key.start / this.totalWidth,
 width: width,
@@ -842,11 +846,11 @@ playNote(noteIndex) {
 if (!this.audioContext) return;
 this.stopOscillator();
 // 找到这个noteIndex对应的键
-let noteName = '';
+let noteLabel = '';
 let position = 0;
 for (let key of this.keyPositions) {
 if (key.noteIndex === noteIndex) {
-noteName = key.noteName;
+noteLabel = key.noteLabel;
 position = key.position;
 break;
 }
@@ -877,9 +881,15 @@ this.gainNode.connect(this.audioContext.destination);
 this.gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
 this.gainNode.gain.linearRampToValueAtTime(0.25, this.audioContext.currentTime + 0.03);
 this.oscillator.start();
-// 计算八度：position 0-11是3，12-23是4
-const octave = 3 + Math.floor(position / 12) + this.octave;
-this.showNote(noteName + octave);
+// 调整音符标签的八度
+let displayNote = noteLabel;
+if (this.octave !== 0) {
+// 提取音符和数字部分
+const notePart = noteLabel.match(/[^\d]+/)[0];
+const octavePart = parseInt(noteLabel.match(/\d+/)[0]);
+displayNote = notePart + (octavePart + this.octave);
+}
+this.showNote(displayNote);
 }
  
 stopOscillator() {
