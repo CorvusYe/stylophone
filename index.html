@@ -801,13 +801,11 @@ return Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI);
 };
  
 const updateTranspose = () => {
-// 限制旋转范围在 -180 到 180 度
-if (currentRotation > 180) currentRotation = 180;
-if (currentRotation < -180) currentRotation = -180;
-// 映射到 -12 到 12 个半音
-this.transpose = Math.round((currentRotation / 180) * 12);
+// 无极旋钮，无角度限制
+// 映射到浮点数，没有上下界
+this.transpose = (currentRotation / 180) * 12;
 knob.style.transform = `rotate(${currentRotation}deg)`;
-document.getElementById('transposeValue').textContent = this.transpose;
+document.getElementById('transposeValue').textContent = this.transpose.toFixed(1);
 };
  
 knob.addEventListener('mousedown', (e) => {
