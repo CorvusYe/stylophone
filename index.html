@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>半岛铁盒</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+ 
+body {
+background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+min-height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+font-family: 'Courier New', monospace;
+overflow: hidden;
+padding: 40px;
+}
+ 
+.container {
+width: 100%;
+max-width: 1200px;
+aspect-ratio: 16/10;
+background: linear-gradient(180deg, #8B4513 0%, #654321 50%, #4a3728 100%);
+border-radius: 12px;
+box-shadow: 
+0 20px 60px rgba(0, 0, 0, 0.6),
+inset 0 2px 4px rgba(255, 255, 255, 0.1);
+position: relative;
+overflow: hidden;
+}
+ 
+.tines-container {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 90%;
+height: 80%;
+}
+ 
+.tine {
+position: absolute;
+background: linear-gradient(90deg, #c0c0c0, #e0e0e0, #c0c0c0);
+border-radius: 2px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+cursor: pointer;
+transition: transform 0.1s ease;
+}
+ 
+.tine:hover {
+transform: scale(1.05);
+}
+ 
+.tine.playing {
+animation: vibrate 0.3s ease-out;
+}
+ 
+@keyframes vibrate {
+0%, 100% { transform: translateX(0); }
+10% { transform: translateX(-3px); }
+20% { transform: translateX(3px); }
+30% { transform: translateX(-2px); }
+40% { transform: translateX(2px); }
+50% { transform: translateX(-1px); }
+60% { transform: translateX(1px); }
+}
+ 
+.stylus {
+position: fixed;
+width: 8px;
+height: 40px;
+background: linear-gradient(180deg, #333 0%, #666 50%, #333 100%);
+border-radius: 0 0 4px 4px;
+pointer-events: none;
+z-index: 1000;
+transform: translate(-50%, -100%);
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+ 
+.stylus-tip {
+position: absolute;
+bottom: -4px;
+left: 50%;
+transform: translateX(-50%);
+width: 12px;
+height: 12px;
+background: radial-gradient(circle, #ffd700 0%, #b8860b 100%);
+border-radius: 50%;
+box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+}
+ 
+.connection-line {
+position: fixed;
+pointer-events: none;
+z-index: 999;
+stroke: #ffd700;
+stroke-width: 2;
+fill: none;
+filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5));
+}
+ 
+.controls {
+position: absolute;
+bottom: 20px;
+left: 50%;
+transform: translateX(-50%);
+display: flex;
+gap: 15px;
+z-index: 100;
+}
+ 
+.timbre-btn {
+padding: 10px 20px;
+background: linear-gradient(180deg, #5a4a3a 0%, #3a2a1a 100%);
+color: #e0d0b0;
+border: 2px solid #6a5a4a;
+border-radius: 6px;
+cursor: pointer;
+font-family: 'Courier New', monospace;
+font-size: 14px;
+font-weight: bold;
+transition: all 0.2s ease;
+text-transform: uppercase;
+}
+ 
+.timbre-btn:hover {
+background: linear-gradient(180deg, #7a6a5a 0%, #5a4a3a 100%);
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+ 
+.timbre-btn.active {
+background: linear-gradient(180deg, #8b7355 0%, #6b5335 100%);
+border-color: #ffd700;
+box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+ 
+.title {
+position: absolute;
+top: 20px;
+left: 50%;
+transform: translateX(-50%);
+color: #e0d0b0;
+font-size: 28px;
+font-weight: bold;
+text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+letter-spacing: 4px;
+}
+ 
+.note-indicator {
+position: absolute;
+top: 60px;
+left: 50%;
+transform: translateX(-50%);
+color: #ffd700;
+font-size: 18px;
+opacity: 0;
+transition: opacity 0.3s ease;
+text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+ 
+.note-indicator.show {
+opacity: 1;
+}
+</style>
+</head>
+<body>
+<div class="container" id="container">
+<div class="title">半岛铁盒</div>
+<div class="note-indicator" id="noteIndicator">C4</div>
+<div class="tines-container" id="tinesContainer"></div>
+<div class="controls">
+<button class="timbre-btn active" data-timbre="kalimba">半岛铁盒</button>
+<button class="timbre-btn" data-timbre="piano">钢琴</button>
+<button class="timbre-btn" data-timbre="guqin">古琴</button>
+</div>
+</div>
+ 
+<div class="stylus" id="stylus">
+<div class="stylus-tip"></div>
+</div>
+<svg class="connection-line" id="connectionLine" width="100%" height="100%">
+<line id="line"></line>
+</svg>
+ 
+<script>
+class KalimbaApp {
+constructor() {
+this.audioContext = null;
+this.currentTimbre = 'kalimba';
+this.mouseX = window.innerWidth / 2;
+this.mouseY = window.innerHeight / 2;
+this.tines = [];
+this.noteNames = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5', 'A5', 'B5', 'C6'];
+this.noteFrequencies = {
+'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
+'G4': 392.00, 'A4': 440.00, 'B4': 493.88, 'C5': 523.25,
+'D5': 587.33, 'E5': 659.25, 'F5': 698.46, 'G5': 783.99,
+'A5': 880.00, 'B5': 987.77, 'C6': 1046.50
+};
+this.init();
+}
+ 
+init() {
+this.createTines();
+this.setupEventListeners();
+this.animate();
+}
+ 
+initAudio() {
+if (!this.audioContext) {
+this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+}
+if (this.audioContext.state === 'suspended') {
+this.audioContext.resume();
+}
+}
+ 
+createTines() {
+const container = document.getElementById('tinesContainer');
+const numTines = this.noteNames.length;
+for (let i = 0; i < numTines; i++) {
+const tine = document.createElement('div');
+tine.className = 'tine';
+tine.dataset.note = this.noteNames[i];
+tine.dataset.index = i;
+const width = 20 + (numTines - i) * 3;
+const height = 100 + i * 15;
+const x = (i / (numTines - 1)) * 100;
+tine.style.width = `${width}px`;
+tine.style.height = `${height}px`;
+tine.style.left = `${x}%`;
+tine.style.top = '50%';
+tine.style.transform = 'translate(-50%, -50%)';
+tine.style.background = this.getTineGradient(i);
+this.tines.push({
+element: tine,
+x: x,
+note: this.noteNames[i],
+frequency: this.noteFrequencies[this.noteNames[i]]
+});
+container.appendChild(tine);
+}
+}
+ 
+getTineGradient(index) {
+const hues = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 15, 45, 75];
+const hue = hues[index % hues.length];
+return `linear-gradient(90deg, 
+hsl(${hue}, 20%, 50%) 0%, 
+hsl(${hue}, 20%, 70%) 50%, 
+hsl(${hue}, 20%, 50%) 100%)`;
+}
+ 
+setupEventListeners() {
+const container = document.getElementById('container');
+container.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+container.addEventListener('mousedown', (e) => this.handleMouseDown(e));
+container.addEventListener('mouseup', () => this.isMouseDown = false);
+container.addEventListener('touchmove', (e) => {
+e.preventDefault();
+const touch = e.touches[0];
+this.handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
+}, { passive: false });
+container.addEventListener('touchstart', (e) => {
+e.preventDefault();
+const touch = e.touches[0];
+this.handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
+this.handleMouseDown({ clientX: touch.clientX, clientY: touch.clientY });
+}, { passive: false });
+container.addEventListener('touchend', () => {
+this.isMouseDown = false;
+});
+ 
+document.querySelectorAll('.timbre-btn').forEach(btn => {
+btn.addEventListener('click', () => {
+document.querySelectorAll('.timbre-btn').forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
+this.currentTimbre = btn.dataset.timbre;
+});
+});
+ 
+document.addEventListener('click', () => this.initAudio(), { once: true });
+document.addEventListener('touchstart', () => this.initAudio(), { once: true });
+}
+ 
+handleMouseMove(e) {
+this.mouseX = e.clientX;
+this.mouseY = e.clientY;
+this.updateStylus();
+this.updateConnectionLine();
+}
+ 
+handleMouseDown(e) {
+this.isMouseDown = true;
+this.initAudio();
+const container = document.getElementById('container');
+const rect = container.getBoundingClientRect();
+const x = e.clientX - rect.left;
+const y = e.clientY - rect.top;
+this.checkTineCollision(x, y, rect);
+}
+ 
+checkTineCollision(x, y, rect) {
+for (let i = this.tines.length - 1; i >= 0; i--) {
+const tine = this.tines[i];
+const tineRect = tine.element.getBoundingClientRect();
+if (x >= tineRect.left - rect.left && 
+x <= tineRect.right - rect.left &&
+y >= tineRect.top - rect.top && 
+y <= tineRect.bottom - rect.top) {
+this.playNote(tine.note, tine.frequency);
+tine.element.classList.add('playing');
+setTimeout(() => tine.element.classList.remove('playing'), 300);
+this.showNoteIndicator(tine.note);
+break;
+}
+}
+}
+ 
+playNote(note, frequency) {
+if (!this.audioContext) return;
+const oscillator = this.audioContext.createOscillator();
+const gainNode = this.audioContext.createGain();
+oscillator.connect(gainNode);
+gainNode.connect(this.audioContext.destination);
+switch (this.currentTimbre) {
+case 'kalimba':
+oscillator.type = 'sine';
+oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+const harmonics = [2, 3, 4, 5];
+harmonics.forEach((harmonic, index) => {
+const harmonicOsc = this.audioContext.createOscillator();
+const harmonicGain = this.audioContext.createGain();
+harmonicOsc.type = 'sine';
+harmonicOsc.frequency.setValueAtTime(frequency * harmonic, this.audioContext.currentTime);
+harmonicGain.gain.setValueAtTime(0.1 / harmonic, this.audioContext.currentTime);
+harmonicGain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 1.5 - index * 0.2);
+harmonicOsc.connect(harmonicGain);
+harmonicGain.connect(this.audioContext.destination);
+harmonicOsc.start();
+harmonicOsc.stop(this.audioContext.currentTime + 1.5);
+});
+break;
+case 'piano':
+oscillator.type = 'triangle';
+oscillator.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
+break;
+case 'guqin':
+oscillator.type = 'sawtooth';
+oscillator.frequency.setValueAtTime(frequency * 0.5, this.audioContext.currentTime);
+break;
+}
+gainNode.gain.setValueAtTime(0.5, this.audioContext.currentTime);
+gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 2);
+oscillator.start();
+oscillator.stop(this.audioContext.currentTime + 2);
+}
+ 
+showNoteIndicator(note) {
+const indicator = document.getElementById('noteIndicator');
+indicator.textContent = note;
+indicator.classList.add('show');
+setTimeout(() => indicator.classList.remove('show'), 500);
+}
+ 
+updateStylus() {
+const stylus = document.getElementById('stylus');
+stylus.style.left = `${this.mouseX}px`;
+stylus.style.top = `${this.mouseY}px`;
+}
+ 
+updateConnectionLine() {
+const container = document.getElementById('container');
+const containerRect = container.getBoundingClientRect();
+const containerCenterX = containerRect.left + containerRect.width / 2;
+const containerCenterY = containerRect.top + containerRect.height / 2;
+const line = document.getElementById('line');
+line.setAttribute('x1', containerCenterX);
+line.setAttribute('y1', containerCenterY);
+line.setAttribute('x2', this.mouseX);
+line.setAttribute('y2', this.mouseY);
+}
+ 
+animate() {
+requestAnimationFrame(() => this.animate());
+}
+}
+ 
+window.addEventListener('DOMContentLoaded', () => {
+new KalimbaApp();
+});
+</script>
+</body>
+</html>
