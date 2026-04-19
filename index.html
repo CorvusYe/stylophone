@@ -135,14 +135,15 @@ z-index: 10;
  
 .transpose-label {
 font-size: 9px;
-color: #aaaaaa;
+color: #ffffff;
 font-weight: bold;
+text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
  
 .knob-container {
 position: relative;
-width: 40px;
-height: 40px;
+width: 34px;
+height: 34px;
 }
  
 .knob {
@@ -361,7 +362,10 @@ box-shadow: 0 0 8px rgba(153, 51, 255, 0.6);
 </head>
 <body>
 <div class="stylophone-container" id="stylophone">
-<div class="transpose-container" style="position: absolute; top: 40px; left: 45px;">
+<div class="speaker-section" id="speaker">
+<div class="speaker-logo">stylophone</div>
+<div class="transpose-container" style="position: absolute; top: 50%; left: 12.5%; transform: translate(-50%, -50%);">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
 <div class="transpose-label">Transpose</div>
 <div class="knob-container">
 <div class="knob" id="transposeKnob" style="transform: rotate(0deg);">
@@ -370,8 +374,7 @@ box-shadow: 0 0 8px rgba(153, 51, 255, 0.6);
 </div>
 <div class="transpose-value" id="transposeValue">0</div>
 </div>
-<div class="speaker-section" id="speaker">
-<div class="speaker-logo">stylophone</div>
+</div>
 </div>
  
 <div class="controls-bar">
