@@ -593,8 +593,8 @@ angle = Math.atan2(dy, dx) * (180 / Math.PI);
 }
 // 转换为CSS旋转角度（顺时针为正）
 // 数学坐标系的角度需要转换
-// 再逆时针旋转90度
-const cssAngle = -angle - 90;
+// 再逆时针旋转180度（总共）
+const cssAngle = -angle - 180;
 stylus.style.left = this.mouseX + 'px';
 stylus.style.top = this.mouseY + 'px';
 stylus.style.transform = `translate(-50%, -100%) rotate(${cssAngle}deg)`;
