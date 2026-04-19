@@ -592,16 +592,11 @@ this.canvas.height = container.clientHeight;
 this.drawKeyboard();
 }
  
-getFrequency(noteIndex) {
-let position = 0;
-// 找到这个noteIndex对应的键位置
-for (let key of this.keyPositions) {
-if (key.noteIndex === noteIndex) {
-position = key.position; // 使用键的位置属性（半音数）
-break;
-}
-}
-// 0对应C4（中央C，261.63 Hz），每个半音是2^(1/12)倍
+getFrequencyByPosition(normalizedX) {
+// 归一化X坐标（0-1）映射到音高范围
+// 0对应C4，1对应G5（约2个八度）
+const totalSemitones = 19; // 从C4到G5是19个半音
+const position = normalizedX * totalSemitones;
 const baseFreq = 261.63; // C4
 return baseFreq * Math.pow(2, (position / 12) + this.octave);
 }
@@ -731,44 +726,63 @@ this.drawKeyboard();
  
 checkKeyHit(clientX, clientY) {
 let hit = false;
+let key = null;
 // 计算鼠标在canvas上的相对位置
 const rect = this.canvas.getBoundingClientRect();
 const x = (clientX - rect.left) / rect.width;
 const y = (clientY - rect.top) / rect.height;
 // 先检测上排键（最后8个，索引12-19）
 for (let i = 12; i < this.keyPositions.length; i++) {
-const key = this.keyPositions[i];
-if (x >= key.left && x <= key.left + key.width &&
-y >= key.top && y <= key.top + key.height) {
+const currentKey = this.keyPositions[i];
+if (x >= currentKey.left && x <= currentKey.left + currentKey.width &&
+y >= currentKey.top && y <= currentKey.top + currentKey.height) {
 hit = true;
-const noteIndex = key.noteIndex;
-if (this.currentNote !== noteIndex) {
-this.currentNote = noteIndex;
-this.playNote(noteIndex);
-this.drawActiveKey(key);
-}
-return;
+key = currentKey;
+break;
 }
 }
 // 再检测下排键（前12个，索引0-11）
+if (!hit) {
 for (let i = 0; i < 12; i++) {
-const key = this.keyPositions[i];
-if (x >= key.left && x <= key.left + key.width &&
-y >= key.top && y <= key.top + key.height) {
+const currentKey = this.keyPositions[i];
+if (x >= currentKey.left && x <= currentKey.left + currentKey.width &&
+y >= currentKey.top && y <= currentKey.top + currentKey.height) {
 hit = true;
-const noteIndex = key.noteIndex;
-if (this.currentNote !== noteIndex) {
-this.currentNote = noteIndex;
-this.playNote(noteIndex);
+key = currentKey;
+break;
+}
+}
+}
+if (hit) {
+// 播放线性音高
+const normalizedX = Math.max(0, Math.min(1, x)); // 限制在0-1范围内
+if (!this.oscillator) {
+// 开始新音符
+this.playNoteByPosition(normalizedX);
+} else {
+// 更新现有频率
+const newFreq = this.getFrequencyByPosition(normalizedX);
+this.oscillator.frequency.setValueAtTime(newFreq, this.audioContext.currentTime);
+}
+// 更新显示和高亮
+if (this.currentNote !== key.noteIndex) {
+this.currentNote = key.noteIndex;
 this.drawActiveKey(key);
+// 显示音符标签
+let noteLabel = key.noteLabel;
+if (this.octave !== 0) {
+const notePart = noteLabel.match(/[^\d]+/)[0];
+const octavePart = parseInt(noteLabel.match(/\d+/)[0]);
+noteLabel = notePart + (octavePart + this.octave);
 }
-return;
+this.showNote(noteLabel);
 }
-}
-if (!hit && this.currentNote !== null) {
+} else {
+if (this.currentNote !== null) {
 this.stopOscillator();
 this.currentNote = null;
 this.drawKeyboard();
+}
 }
 }
  
@@ -854,23 +868,30 @@ this.ctx.strokeRect(0, 0, width, height);
 }
  
 playNote(noteIndex) {
+// 保留此函数但使用新的线性音高方法
 if (!this.audioContext) return;
-this.stopOscillator();
 // 找到这个noteIndex对应的键
-let noteLabel = '';
-let position = 0;
-for (let key of this.keyPositions) {
-if (key.noteIndex === noteIndex) {
-noteLabel = key.noteLabel;
-position = key.position;
+let key = null;
+for (let k of this.keyPositions) {
+if (k.noteIndex === noteIndex) {
+key = k;
 break;
 }
 }
+if (key) {
+const centerX = key.left + key.width / 2;
+this.playNoteByPosition(centerX);
+}
+}
+ 
+playNoteByPosition(normalizedX) {
+if (!this.audioContext) return;
+this.stopOscillator();
 this.oscillator = this.audioContext.createOscillator();
 this.gainNode = this.audioContext.createGain();
 // 经典Stylophone使用方形波
 this.oscillator.type = 'square';
-const baseFreq = this.getFrequency(noteIndex);
+const baseFreq = this.getFrequencyByPosition(normalizedX);
 this.oscillator.frequency.setValueAtTime(
 baseFreq,
 this.audioContext.currentTime
@@ -892,15 +913,6 @@ this.gainNode.connect(this.audioContext.destination);
 this.gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
 this.gainNode.gain.linearRampToValueAtTime(0.25, this.audioContext.currentTime + 0.03);
 this.oscillator.start();
-// 调整音符标签的八度
-let displayNote = noteLabel;
-if (this.octave !== 0) {
-// 提取音符和数字部分
-const notePart = noteLabel.match(/[^\d]+/)[0];
-const octavePart = parseInt(noteLabel.match(/\d+/)[0]);
-displayNote = notePart + (octavePart + this.octave);
-}
-this.showNote(displayNote);
 }
  
 stopOscillator() {
