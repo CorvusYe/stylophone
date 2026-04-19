@@ -137,22 +137,13 @@ transition: all 0.08s;
 box-sizing: border-box;
 }
  
-.top-key {
+.white-key {
 z-index: 1;
-/* 真实Stylophone上排键形状：顶部有圆角和凹口 */
+/* 真实Stylophone白键形状：顶部有圆角和凹口 */
 clip-path: polygon(
 8% 0%, 35% 0%, 40% 8%, 60% 8%, 65% 0%, 92% 0%, 100% 20%, 100% 100%, 0% 100%, 0% 20%
 );
 padding-bottom: 8px;
-}
- 
-.bottom-key {
-z-index: 1;
-/* 真实Stylophone下排键形状：底部有圆角 */
-clip-path: polygon(
-0% 0%, 100% 0%, 100% 80%, 92% 100%, 65% 100%, 60% 92%, 40% 92%, 35% 100%, 8% 100%, 0% 80%
-);
-padding-top: 8px;
 }
  
 .black-key {
@@ -164,6 +155,13 @@ color: transparent;
 clip-path: polygon(
 15% 0%, 85% 0%, 100% 25%, 100% 100%, 0% 100%, 0% 25%
 );
+}
+ 
+.bottom-key {
+z-index: 1;
+background: linear-gradient(180deg, #f0e6d8 0%, #e8dcc4 50%, #d8ccb4 100%);
+border: 1px solid #998877;
+padding-top: 5px;
 }
  
 .key:hover {
@@ -457,14 +455,13 @@ const keyboard = document.getElementById('keyboard');
 const keyRatios = [1.5, 1.5, 2.5, 2.5, 1.5, 1.5, 2.5, 2.5, 2.5, 1.5, 1.5, 1.5];
 const totalRatio = keyRatios.reduce((sum, ratio) => sum + ratio, 0);
 let currentPosition = 0;
-// 上排键：音符键
 for (let i = 0; i < 12; i++) {
 const key = this.createKey(i, currentPosition, keyRatios[i], totalRatio);
 keyboard.appendChild(key);
 this.keys.push({ element: key, noteIndex: i });
 currentPosition += keyRatios[i];
 }
-// 下排键：数字键，偏移位置以创建错落感
+// 第二行（下排数字）
 currentPosition = 0;
 for (let i = 12; i < 24; i++) {
 const key = this.createNumberKey(i - 12, currentPosition, keyRatios[i - 12], totalRatio);
@@ -476,7 +473,7 @@ currentPosition += keyRatios[i - 12];
  
 createKey(noteIndex, position, ratio, totalRatio) {
 const key = document.createElement('div');
-key.className = 'key top-key';
+key.className = 'key white-key';
 key.dataset.noteIndex = noteIndex;
 const width = (ratio / totalRatio) * 100;
 const left = (position / totalRatio) * 100;
@@ -493,8 +490,7 @@ key.className = 'key bottom-key';
 key.dataset.noteIndex = 12 + number;
 const width = (ratio / totalRatio) * 100;
 const left = (position / totalRatio) * 100;
-// 下排键偏移，创造明显的交错感
-key.style.left = `${left + width * 0.5}%`;
+key.style.left = `${left}%`;
 key.style.top = '45px';
 key.style.width = `${width}%`;
 key.style.height = '25px';
@@ -619,9 +615,27 @@ this.clearActiveKeys();
  
 checkKeyHit(clientX, clientY) {
 let hit = false;
-// 检测所有键
+// 先检测黑键（z-index更高）
 for (let keyData of this.keys) {
 const key = keyData.element;
+if (!key.classList.contains('black-key')) continue;
+const rect = key.getBoundingClientRect();
+if (clientX >= rect.left && clientX <= rect.right &&
+clientY >= rect.top && clientY <= rect.bottom) {
+hit = true;
+const noteIndex = keyData.noteIndex;
+if (this.currentNote !== noteIndex) {
+this.currentNote = noteIndex;
+this.playNote(noteIndex);
+this.updateActiveKeys(key);
+}
+return;
+}
+}
+// 再检测白键和下排键
+for (let keyData of this.keys) {
+const key = keyData.element;
+if (!key.classList.contains('white-key') && !key.classList.contains('bottom-key')) continue;
 const rect = key.getBoundingClientRect();
 if (clientX >= rect.left && clientX <= rect.right &&
 clientY >= rect.top && clientY <= rect.bottom) {
