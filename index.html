@@ -452,6 +452,9 @@ const width = this.canvas.width;
 const height = this.canvas.height;
 // 清空画布
 this.ctx.clearRect(0, 0, width, height);
+// 绘制键盘背景
+this.ctx.fillStyle = '#f0e6d8';
+this.ctx.fillRect(0, 0, width, height);
 // 绘制上排键
 for (let i = 0; i < 12; i++) {
 const key = this.keyPositions[i];
@@ -459,18 +462,24 @@ const x = key.left * width;
 const y = key.top * height;
 const keyWidth = key.width * width;
 const keyHeight = key.height * height;
-// 绘制上排键形状
+// 绘制上排键形状（根据参考图）
 this.ctx.beginPath();
-this.ctx.moveTo(x + keyWidth * 0.08, y);
-this.ctx.lineTo(x + keyWidth * 0.35, y);
-this.ctx.lineTo(x + keyWidth * 0.4, y + keyHeight * 0.08);
-this.ctx.lineTo(x + keyWidth * 0.6, y + keyHeight * 0.08);
-this.ctx.lineTo(x + keyWidth * 0.65, y);
-this.ctx.lineTo(x + keyWidth * 0.92, y);
-this.ctx.lineTo(x + keyWidth, y + keyHeight * 0.2);
-this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.moveTo(x, y + keyHeight * 0.1);
 this.ctx.lineTo(x, y + keyHeight);
-this.ctx.lineTo(x, y + keyHeight * 0.2);
+this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.lineTo(x + keyWidth, y + keyHeight * 0.1);
+// 顶部凹口
+if (i % 2 === 0) {
+// 偶数键（1, 3, 5, 7, 9, 11）
+this.ctx.lineTo(x + keyWidth * 0.8, y);
+this.ctx.lineTo(x + keyWidth * 0.6, y + keyHeight * 0.1);
+this.ctx.lineTo(x + keyWidth * 0.4, y + keyHeight * 0.1);
+this.ctx.lineTo(x + keyWidth * 0.2, y);
+} else {
+// 奇数键（2, 4, 6, 8, 10, 12）
+this.ctx.lineTo(x + keyWidth, y);
+this.ctx.lineTo(x, y);
+}
 this.ctx.closePath();
 // 填充颜色
 this.ctx.fillStyle = '#f0e6d8';
@@ -491,14 +500,8 @@ const keyHeight = key.height * height;
 this.ctx.beginPath();
 this.ctx.moveTo(x, y);
 this.ctx.lineTo(x + keyWidth, y);
-this.ctx.lineTo(x + keyWidth, y + keyHeight * 0.8);
-this.ctx.lineTo(x + keyWidth * 0.92, y + keyHeight);
-this.ctx.lineTo(x + keyWidth * 0.65, y + keyHeight);
-this.ctx.lineTo(x + keyWidth * 0.6, y + keyHeight * 0.92);
-this.ctx.lineTo(x + keyWidth * 0.4, y + keyHeight * 0.92);
-this.ctx.lineTo(x + keyWidth * 0.35, y + keyHeight);
-this.ctx.lineTo(x + keyWidth * 0.08, y + keyHeight);
-this.ctx.lineTo(x, y + keyHeight * 0.8);
+this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.lineTo(x, y + keyHeight);
 this.ctx.closePath();
 // 填充颜色
 this.ctx.fillStyle = '#f0e6d8';
@@ -514,6 +517,10 @@ this.ctx.textAlign = 'center';
 this.ctx.textBaseline = 'middle';
 this.ctx.fillText((i - 11).toString(), x + keyWidth / 2, y + keyHeight / 2);
 }
+// 绘制键盘边框
+this.ctx.strokeStyle = '#0066cc';
+this.ctx.lineWidth = 2;
+this.ctx.strokeRect(0, 0, width, height);
 }
  
 resizeCanvas() {
@@ -681,32 +688,33 @@ const y = activeKey.top * height;
 const keyWidth = activeKey.width * width;
 const keyHeight = activeKey.height * height;
 if (activeKey.type === 'top') {
-// 绘制上排键形状
+// 绘制上排键形状（根据参考图）
 this.ctx.beginPath();
-this.ctx.moveTo(x + keyWidth * 0.08, y);
-this.ctx.lineTo(x + keyWidth * 0.35, y);
-this.ctx.lineTo(x + keyWidth * 0.4, y + keyHeight * 0.08);
-this.ctx.lineTo(x + keyWidth * 0.6, y + keyHeight * 0.08);
-this.ctx.lineTo(x + keyWidth * 0.65, y);
-this.ctx.lineTo(x + keyWidth * 0.92, y);
-this.ctx.lineTo(x + keyWidth, y + keyHeight * 0.2);
-this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.moveTo(x, y + keyHeight * 0.1);
 this.ctx.lineTo(x, y + keyHeight);
-this.ctx.lineTo(x, y + keyHeight * 0.2);
+this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.lineTo(x + keyWidth, y + keyHeight * 0.1);
+// 顶部凹口
+const noteIndex = activeKey.noteIndex;
+if (noteIndex % 2 === 0) {
+// 偶数键（1, 3, 5, 7, 9, 11）
+this.ctx.lineTo(x + keyWidth * 0.8, y);
+this.ctx.lineTo(x + keyWidth * 0.6, y + keyHeight * 0.1);
+this.ctx.lineTo(x + keyWidth * 0.4, y + keyHeight * 0.1);
+this.ctx.lineTo(x + keyWidth * 0.2, y);
+} else {
+// 奇数键（2, 4, 6, 8, 10, 12）
+this.ctx.lineTo(x + keyWidth, y);
+this.ctx.lineTo(x, y);
+}
 this.ctx.closePath();
 } else {
 // 绘制下排键形状
 this.ctx.beginPath();
 this.ctx.moveTo(x, y);
 this.ctx.lineTo(x + keyWidth, y);
-this.ctx.lineTo(x + keyWidth, y + keyHeight * 0.8);
-this.ctx.lineTo(x + keyWidth * 0.92, y + keyHeight);
-this.ctx.lineTo(x + keyWidth * 0.65, y + keyHeight);
-this.ctx.lineTo(x + keyWidth * 0.6, y + keyHeight * 0.92);
-this.ctx.lineTo(x + keyWidth * 0.4, y + keyHeight * 0.92);
-this.ctx.lineTo(x + keyWidth * 0.35, y + keyHeight);
-this.ctx.lineTo(x + keyWidth * 0.08, y + keyHeight);
-this.ctx.lineTo(x, y + keyHeight * 0.8);
+this.ctx.lineTo(x + keyWidth, y + keyHeight);
+this.ctx.lineTo(x, y + keyHeight);
 this.ctx.closePath();
 }
 // 填充激活颜色
