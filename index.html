@@ -390,14 +390,12 @@ body {
 display: flex;
 align-items: center;
 justify-content: center;
+}
+#stylophone {
 transform: rotate(90deg);
 transform-origin: center;
-width: 100vh;
-height: 100vw;
-}
-.stylophone-container {
-width: 90vw;
-max-width: 90vw;
+width: 90vh;
+max-width: 90vh;
 }
 }
 </style>
@@ -976,32 +974,12 @@ this.checkKeyHit(e.clientX, e.clientY);
  
 updateStylus() {
 const stylus = document.getElementById('stylus');
-// 检测是否在移动设备上（屏幕宽度小于768px）
-const isMobile = window.innerWidth < 768;
-let screenWidth = window.innerWidth;
-let screenHeight = window.innerHeight;
-let displayMouseX = this.mouseX;
-let displayMouseY = this.mouseY;
 // 计算机屏幕坐标系转换为数学坐标系
 // 屏幕左下角是(0, 0)，y轴向上
-let mathMouseX = this.mouseX;
-let mathMouseY = screenHeight - this.mouseY;
-if (isMobile) {
-// 当屏幕旋转90度后，调整鼠标坐标
-// 计算旋转后的显示位置
-const centerX = screenWidth / 2;
-const centerY = screenHeight / 2;
-// 计算相对于中心的坐标
-const relX = this.mouseX - centerX;
-const relY = this.mouseY - centerY;
-// 旋转90度
-displayMouseX = centerX - relY;
-displayMouseY = centerY + relX;
-// 调整数学坐标系
-[screenWidth, screenHeight] = [screenHeight, screenWidth];
-mathMouseX = displayMouseX;
-mathMouseY = screenHeight - displayMouseY;
-}
+const screenWidth = window.innerWidth;
+const screenHeight = window.innerHeight;
+const mathMouseX = this.mouseX;
+const mathMouseY = screenHeight - this.mouseY;
 let angle = 0;
 if (this.handedness === 'left') {
 // 右手模式：从(屏幕宽度, 0)到笔尖的角度
@@ -1022,8 +1000,8 @@ angle = Math.atan2(dy, dx) * (180 / Math.PI);
 // 数学坐标系的角度需要转换
 // 再逆时针旋转90度（总共，因为之前逆时针180度，现在顺时针90度）
 const cssAngle = -angle - 90;
-stylus.style.left = displayMouseX + 'px';
-stylus.style.top = displayMouseY + 'px';
+stylus.style.left = this.mouseX + 'px';
+stylus.style.top = this.mouseY + 'px';
 stylus.style.transform = `translate(-50%, -100%) rotate(${cssAngle}deg)`;
 }
  
@@ -1039,27 +1017,10 @@ this.drawKeyboard();
 checkKeyHit(clientX, clientY) {
 let hit = false;
 let key = null;
-// 检测是否在移动设备上（屏幕宽度小于768px）
-const isMobile = window.innerWidth < 768;
-let adjustedClientX = clientX;
-let adjustedClientY = clientY;
-if (isMobile) {
-// 当屏幕旋转90度后，调整鼠标坐标
-const screenWidth = window.innerWidth;
-const screenHeight = window.innerHeight;
-const centerX = screenWidth / 2;
-const centerY = screenHeight / 2;
-// 计算相对于中心的坐标
-const relX = clientX - centerX;
-const relY = clientY - centerY;
-// 旋转90度
-adjustedClientX = centerX - relY;
-adjustedClientY = centerY + relX;
-}
 // 计算鼠标在canvas上的相对位置
 const rect = this.canvas.getBoundingClientRect();
-const x = (adjustedClientX - rect.left) / rect.width;
-const y = (adjustedClientY - rect.top) / rect.height;
+const x = (clientX - rect.left) / rect.width;
+const y = (clientY - rect.top) / rect.height;
 // 先检测上排键（最后8个，索引12-19）
 for (let i = 12; i < this.keyPositions.length; i++) {
 const currentKey = this.keyPositions[i];
