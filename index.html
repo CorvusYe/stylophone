@@ -974,12 +974,20 @@ this.checkKeyHit(e.clientX, e.clientY);
  
 updateStylus() {
 const stylus = document.getElementById('stylus');
-// 计算机屏幕坐标系转换为数学坐标系
-// 屏幕左下角是(0, 0)，y轴向上
-const screenWidth = window.innerWidth;
-const screenHeight = window.innerHeight;
-const mathMouseX = this.mouseX;
-const mathMouseY = screenHeight - this.mouseY;
+// 检测是否在移动设备上（屏幕宽度小于768px）
+const isMobile = window.innerWidth < 768;
+let screenWidth = window.innerWidth;
+let screenHeight = window.innerHeight;
+let mathMouseX = this.mouseX;
+let mathMouseY = screenHeight - this.mouseY;
+if (isMobile) {
+// 当stylophone旋转90度后，交换屏幕宽高
+[screenWidth, screenHeight] = [screenHeight, screenWidth];
+// 调整数学坐标系以适应旋转
+const tempX = mathMouseX;
+mathMouseX = mathMouseY;
+mathMouseY = screenHeight - tempX;
+}
 let angle = 0;
 if (this.handedness === 'left') {
 // 右手模式：从(屏幕宽度, 0)到笔尖的角度
@@ -999,7 +1007,11 @@ angle = Math.atan2(dy, dx) * (180 / Math.PI);
 // 转换为CSS旋转角度（顺时针为正）
 // 数学坐标系的角度需要转换
 // 再逆时针旋转90度（总共，因为之前逆时针180度，现在顺时针90度）
-const cssAngle = -angle - 90;
+let cssAngle = -angle - 90;
+if (isMobile) {
+// 在移动设备上，额外调整90度以适应旋转
+cssAngle += 90;
+}
 stylus.style.left = this.mouseX + 'px';
 stylus.style.top = this.mouseY + 'px';
 stylus.style.transform = `translate(-50%, -100%) rotate(${cssAngle}deg)`;
@@ -1017,10 +1029,26 @@ this.drawKeyboard();
 checkKeyHit(clientX, clientY) {
 let hit = false;
 let key = null;
+// 检测是否在移动设备上（屏幕宽度小于768px）
+const isMobile = window.innerWidth < 768;
 // 计算鼠标在canvas上的相对位置
 const rect = this.canvas.getBoundingClientRect();
-const x = (clientX - rect.left) / rect.width;
-const y = (clientY - rect.top) / rect.height;
+let x = (clientX - rect.left) / rect.width;
+let y = (clientY - rect.top) / rect.height;
+if (isMobile) {
+// 当stylophone旋转90度后，正确地转换坐标
+// 将坐标转换为相对于中心的坐标
+const centerX = 0.5;
+const centerY = 0.5;
+const relX = x - centerX;
+const relY = y - centerY;
+// 旋转90度（顺时针）
+const rotatedX = -relY;
+const rotatedY = relX;
+// 转换回相对于canvas的坐标
+x = centerX + rotatedX;
+y = centerY + rotatedY;
+}
 // 先检测上排键（最后8个，索引12-19）
 for (let i = 12; i < this.keyPositions.length; i++) {
 const currentKey = this.keyPositions[i];
