@@ -1,4 +1,4 @@
-# Stylophone GEN X-2 电子琴模拟器
+# Stylophone S1 电子琴模拟器
 
 基于 Web Audio API 的网页版 Stylophone 电子琴模拟器，还原经典 Stylophone 的演奏体验。
 
