@@ -822,42 +822,52 @@ this.handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
 }, { passive: false });
 document.addEventListener('touchend', () => this.handleMouseUp());
 document.querySelectorAll('.octave-btn').forEach(btn => {
-btn.addEventListener('click', () => {
+const handleOctaveChange = () => {
 document.querySelectorAll('.octave-btn').forEach(b => b.classList.remove('active'));
 btn.classList.add('active');
 this.octave = parseInt(btn.dataset.octave);
-});
+};
+btn.addEventListener('click', handleOctaveChange);
+btn.addEventListener('touchstart', handleOctaveChange, { passive: true });
 });
 // 处理手切换按钮
 document.querySelectorAll('[data-hand]').forEach(btn => {
-btn.addEventListener('click', () => {
+const handleHandChange = () => {
 document.querySelectorAll('[data-hand]').forEach(b => b.classList.remove('active'));
 btn.classList.add('active');
 this.handedness = btn.dataset.hand;
 this.updateStylusBase();
-});
+};
+btn.addEventListener('click', handleHandChange);
+btn.addEventListener('touchstart', handleHandChange, { passive: true });
 });
 // 处理电源开关按钮
 document.querySelectorAll('[data-power]').forEach(btn => {
-btn.addEventListener('click', () => {
+const handlePowerChange = () => {
 document.querySelectorAll('[data-power]').forEach(b => b.classList.remove('active'));
 btn.classList.add('active');
 this.powerOn = btn.dataset.power === 'on';
 if (!this.powerOn && this.isPlaying) {
 this.stopOscillator();
 }
-});
+};
+btn.addEventListener('click', handlePowerChange);
+btn.addEventListener('touchstart', handlePowerChange, { passive: true });
 });
  
-document.getElementById('vibBtn').addEventListener('click', (e) => {
+const handleVibToggle = (e) => {
 this.vibratoOn = !this.vibratoOn;
 e.target.classList.toggle('active', this.vibratoOn);
-});
+};
+document.getElementById('vibBtn').addEventListener('click', handleVibToggle);
+document.getElementById('vibBtn').addEventListener('touchstart', handleVibToggle, { passive: true });
  
-document.getElementById('sustainBtn').addEventListener('click', (e) => {
+const handleSustainToggle = (e) => {
 this.sustainOn = !this.sustainOn;
 e.target.classList.toggle('active', this.sustainOn);
-});
+};
+document.getElementById('sustainBtn').addEventListener('click', handleSustainToggle);
+document.getElementById('sustainBtn').addEventListener('touchstart', handleSustainToggle, { passive: true });
  
 // 移调旋钮处理
 const knob = document.getElementById('transposeKnob');
@@ -882,12 +892,12 @@ knob.style.transform = `rotate(${currentRotation}deg)`;
 document.getElementById('transposeValue').textContent = this.transpose.toFixed(1);
 };
  
-knob.addEventListener('mousedown', (e) => {
+const handleKnobStart = (e) => {
 isDragging = true;
 lastAngle = getAngle(e);
-});
+};
  
-document.addEventListener('mousemove', (e) => {
+const handleKnobMove = (e) => {
 if (!isDragging) return;
 const angle = getAngle(e);
 // 计算角度差，处理环绕问题
@@ -897,35 +907,29 @@ if (delta < -180) delta += 360;
 currentRotation += delta;
 lastAngle = angle;
 updateTranspose();
-});
+};
  
-document.addEventListener('mouseup', () => {
+const handleKnobEnd = () => {
 isDragging = false;
-});
+};
+ 
+// 鼠标事件
+knob.addEventListener('mousedown', handleKnobStart);
+document.addEventListener('mousemove', handleKnobMove);
+document.addEventListener('mouseup', handleKnobEnd);
  
 // 触摸事件
 knob.addEventListener('touchstart', (e) => {
 e.preventDefault();
-isDragging = true;
-lastAngle = getAngle(e);
+handleKnobStart(e);
 });
  
 document.addEventListener('touchmove', (e) => {
-if (!isDragging) return;
 e.preventDefault();
-const angle = getAngle(e);
-// 计算角度差，处理环绕问题
-let delta = angle - lastAngle;
-if (delta > 180) delta -= 360;
-if (delta < -180) delta += 360;
-currentRotation += delta;
-lastAngle = angle;
-updateTranspose();
+handleKnobMove(e);
 });
  
-document.addEventListener('touchend', () => {
-isDragging = false;
-});
+document.addEventListener('touchend', handleKnobEnd);
  
 document.addEventListener('click', () => this.initAudio(), { once: true });
 document.addEventListener('touchstart', () => this.initAudio(), { once: true });
