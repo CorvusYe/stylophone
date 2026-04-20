@@ -401,17 +401,36 @@ max-width: 95vh;
 height: 63vh;
 max-height: 63vh;
 padding: 20px;
+display: flex;
+flex-direction: column;
+gap: 10px;
 }
 .speaker-section {
-height: 90px;
-}
-.keyboard-container {
-height: 140px;
+flex: 0 0 auto;
+height: 18%;
+min-height: 80px;
 }
 .controls-bar {
+flex: 0 0 auto;
 padding: 8px 12px;
 }
+.keyboard-area {
+flex: 1;
+display: flex;
+flex-direction: column;
+}
+.keyboard-container {
+flex: 1;
+min-height: 120px;
+}
+.keyboard {
+height: 100%;
+}
+.keyboard canvas {
+height: 100%;
+}
 .keyboard-shortcuts {
+flex: 0 0 auto;
 font-size: 10px;
 padding: 8px;
 }
