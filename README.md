@@ -18,7 +18,7 @@
 
 ## 演示
 
-[演奏效果演示](./play_together.mp4)
+[https://github.com/CorvusYe/stylophone/edit/main/play_together.mp4](https://github.com/user-attachments/assets/f3785ba7-03a2-456e-9191-a348e833c093)
 
 欢迎在 [Issue](../../issues) 区分享你的演奏作品，一起交流学习！
 
