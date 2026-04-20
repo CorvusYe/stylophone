@@ -1003,8 +1003,16 @@ let hit = false;
 let key = null;
 // 计算鼠标在canvas上的相对位置
 const rect = this.canvas.getBoundingClientRect();
-const x = (clientX - rect.left) / rect.width;
-const y = (clientY - rect.top) / rect.height;
+let x = (clientX - rect.left) / rect.width;
+let y = (clientY - rect.top) / rect.height;
+// 检测是否在移动设备上（屏幕宽度小于768px）
+const isMobile = window.innerWidth < 768;
+if (isMobile) {
+// 当屏幕旋转90度后，交换x和y坐标，并调整
+const tempX = x;
+x = 1 - y;
+y = tempX;
+}
 // 先检测上排键（最后8个，索引12-19）
 for (let i = 12; i < this.keyPositions.length; i++) {
 const currentKey = this.keyPositions[i];
