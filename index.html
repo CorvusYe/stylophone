@@ -860,12 +860,21 @@ document.addEventListener('touchstart', () => this.initAudio(), { once: true });
 // 键盘快捷键
 document.addEventListener('keydown', (e) => {
 if (e.key === ' ') {
-// 按住空格键，禁止声音
-this.muteOn = true;
-if (this.isPlaying) {
-this.stopOscillator();
+// 按住空格键，立即中断声音
+if (this.isPlaying && this.oscillator) {
+// 立即停止声音，不使用渐变
+if (this.gainNode) {
+this.gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+}
+this.oscillator.stop();
+this.oscillator = null;
+this.gainNode = null;
+if (this.vibratoOscillator) {
+this.vibratoOscillator.stop();
+this.vibratoOscillator = null;
+this.vibratoGain = null;
+}
 this.isPlaying = false;
-this.currentNote = null;
 }
 } else if (e.key.toLowerCase() === 'v') {
 // 切换vib
@@ -896,7 +905,12 @@ document.querySelector('.octave-btn[data-octave="1"]').classList.add('active');
 // 空格键释放时恢复声音
 document.addEventListener('keyup', (e) => {
 if (e.key === ' ') {
-this.muteOn = false;
+// 释放空格键，恢复声音
+if (!this.isPlaying && this.powerOn) {
+// 重新检测当前鼠标位置的键
+this.isPlaying = true;
+this.checkKeyHit(this.mouseX, this.mouseY);
+}
 }
 });
 }
