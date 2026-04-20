@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Stylophone GEN X-2</title>
 <style>
 * {
@@ -379,6 +379,24 @@ font-size: 10px;
 color: #ffffff;
 border: 1px solid #555555;
 }
+ 
+/* 移动设备横屏处理 */
+@media screen and (max-width: 768px) {
+body {
+position: fixed;
+width: 100vh;
+height: 100vw;
+top: 0;
+left: 0;
+transform: rotate(90deg);
+transform-origin: top left;
+overflow: hidden;
+}
+.stylophone-container {
+max-width: 90vh;
+aspect-ratio: 3/2;
+}
+}
 </style>
 </head>
 <body>
@@ -471,6 +489,7 @@ this.handedness = 'left';
 this.vibratoOn = false;
 this.sustainOn = false;
 this.muteOn = false;
+this.isMobile = false;
 this.stylusBaseX = window.innerWidth / 2;
 this.stylusBaseY = 50;
 this.mouseX = window.innerWidth / 2;
@@ -497,7 +516,27 @@ this.activeKeyProgress = 0;
 this.lastActiveKey = null;
 this.fadeOutKey = null;
 this.fadeOutProgress = 0;
+this.detectDeviceAndOrientation();
 this.animate();
+}
+ 
+detectDeviceAndOrientation() {
+// 检测设备类型
+this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+if (this.isMobile) {
+// 禁用设备方向变化
+window.addEventListener('orientationchange', (e) => {
+e.preventDefault();
+// 保持横屏状态
+if (window.orientation !== 90 && window.orientation !== -90) {
+// 强制横屏显示
+document.body.style.transform = 'rotate(90deg)';
+document.body.style.transformOrigin = 'top left';
+document.body.style.width = '100vh';
+document.body.style.height = '100vw';
+}
+});
+}
 }
  
 createSpeaker() {
@@ -940,13 +979,23 @@ updateStylus() {
 const stylus = document.getElementById('stylus');
 // 计算机屏幕坐标系转换为数学坐标系
 // 屏幕左下角是(0, 0)，y轴向上
-const screenHeight = window.innerHeight;
-const mathMouseX = this.mouseX;
-const mathMouseY = screenHeight - this.mouseY;
+let screenWidth = window.innerWidth;
+let screenHeight = window.innerHeight;
+let mathMouseX = this.mouseX;
+let mathMouseY = screenHeight - this.mouseY;
+// 检查是否是移动设备（已旋转）
+if (this.isMobile) {
+// 对于移动设备，交换宽高因为已经旋转
+[screenWidth, screenHeight] = [screenHeight, screenWidth];
+// 调整鼠标坐标以适应旋转后的坐标系
+const tempX = mathMouseX;
+mathMouseX = mathMouseY;
+mathMouseY = screenHeight - tempX;
+}
 let angle = 0;
 if (this.handedness === 'left') {
 // 右手模式：从(屏幕宽度, 0)到笔尖的角度
-const mathBaseX = window.innerWidth;
+const mathBaseX = screenWidth;
 const mathBaseY = 0;
 const dx = mathMouseX - mathBaseX;
 const dy = mathMouseY - mathBaseY;
