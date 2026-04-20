@@ -1042,9 +1042,9 @@ const centerX = 0.5;
 const centerY = 0.5;
 const relX = x - centerX;
 const relY = y - centerY;
-// 旋转90度（顺时针）
-const rotatedX = -relY;
-const rotatedY = relX;
+// 旋转90度（逆时针）
+const rotatedX = relY;
+const rotatedY = -relX;
 // 转换回相对于canvas的坐标
 x = centerX + rotatedX;
 y = centerY + rotatedY;
