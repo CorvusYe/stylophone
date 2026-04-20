@@ -470,6 +470,7 @@ this.powerOn = true;
 this.handedness = 'left';
 this.vibratoOn = false;
 this.sustainOn = false;
+this.muteOn = false;
 this.stylusBaseX = window.innerWidth / 2;
 this.stylusBaseY = 50;
 this.mouseX = window.innerWidth / 2;
@@ -858,7 +859,15 @@ document.addEventListener('touchstart', () => this.initAudio(), { once: true });
  
 // 键盘快捷键
 document.addEventListener('keydown', (e) => {
-if (e.key.toLowerCase() === 'v') {
+if (e.key === ' ') {
+// 按住空格键，禁止声音
+this.muteOn = true;
+if (this.isPlaying) {
+this.stopOscillator();
+this.isPlaying = false;
+this.currentNote = null;
+}
+} else if (e.key.toLowerCase() === 'v') {
 // 切换vib
 this.vibratoOn = !this.vibratoOn;
 document.getElementById('vibBtn').classList.toggle('active', this.vibratoOn);
@@ -883,6 +892,13 @@ document.querySelectorAll('.octave-btn').forEach(btn => btn.classList.remove('ac
 document.querySelector('.octave-btn[data-octave="1"]').classList.add('active');
 }
 });
+ 
+// 空格键释放时恢复声音
+document.addEventListener('keyup', (e) => {
+if (e.key === ' ') {
+this.muteOn = false;
+}
+});
 }
  
 updateStylusBase() {
@@ -891,7 +907,7 @@ updateStylusBase() {
 }
  
 handleMouseDown(e) {
-if (!this.powerOn) return;
+if (!this.powerOn || this.muteOn) return;
 this.initAudio();
 this.isPlaying = true;
 this.checkKeyHit(e.clientX, e.clientY);
@@ -901,7 +917,7 @@ handleMouseMove(e) {
 this.mouseX = e.clientX;
 this.mouseY = e.clientY;
 this.updateStylus();
-if (this.isPlaying && this.powerOn) {
+if (this.isPlaying && this.powerOn && !this.muteOn) {
 this.checkKeyHit(e.clientX, e.clientY);
 }
 }
