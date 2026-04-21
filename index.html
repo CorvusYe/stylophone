@@ -543,6 +543,37 @@ this.baseFrequencies = {
 'G#': 207.65, 'A': 220.00, 'A#': 233.08, 'B': 246.94
 };
 this.keys = [];
+// 存储音符频率映射
+this.noteFrequencies = {
+'A2': 110.00,
+'Bb2': 116.54,
+'A#2': 116.54,
+'B2': 123.47,
+'C3': 130.81,
+'Db3': 138.59,
+'C#3': 138.59,
+'D3': 146.83,
+'Eb3': 155.56,
+'D#3': 155.56,
+'E3': 164.81,
+'F3': 174.61,
+'Gb3': 185.00,
+'F#3': 185.00,
+'G3': 196.00,
+'Ab3': 207.65,
+'G#3': 207.65,
+'A3': 220.00,
+'Bb3': 233.08,
+'A#3': 233.08,
+'B3': 246.94,
+'C4': 261.63,
+'Db4': 277.18,
+'C#4': 277.18,
+'D4': 293.66,
+'Eb4': 311.13,
+'D#4': 311.13,
+'E4': 329.63
+};
 this.init();
 }
  
@@ -609,49 +640,59 @@ calculateKeyPositions() {
 this.keyPositions = [];
 // 总范围是0到12
 this.totalWidth = 12;
-// 下排键（白键）：按照真实Stylophone S1 Mid档
-// 1:C4,2:D4,3:E4,4:F4,5:G4,6:A4,7:B4,8:C5,9:D5,10:E5,11:F5,12:G5
-const bottomNotePositions = [0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19];
+// 下排键（白键）：按照新要求
+const bottomNoteData = [
+{noteLabel: 'A2', frequency: 110.00},  // 1
+{noteLabel: 'B2', frequency: 123.47},  // 2
+{noteLabel: 'C3', frequency: 130.81},  // 3
+{noteLabel: 'D3', frequency: 146.83},  // 4
+{noteLabel: 'E3', frequency: 164.81},  // 5
+{noteLabel: 'F3', frequency: 174.61},  // 6
+{noteLabel: 'G3', frequency: 196.00},  // 7
+{noteLabel: 'A3', frequency: 220.00},  // 8
+{noteLabel: 'B3', frequency: 246.94},  // 9
+{noteLabel: 'C4', frequency: 261.63},  // 10
+{noteLabel: 'D4', frequency: 293.66},  // 11
+{noteLabel: 'E4', frequency: 329.63}   // 12
+];
 const bottomNoteNames = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
-const bottomNoteLabels = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5'];
 for (let i = 0; i < 12; i++) {
 this.keyPositions.push({
-noteIndex: bottomNotePositions[i],
+noteIndex: i,
 noteName: bottomNoteNames[i],
-noteLabel: bottomNoteLabels[i],
+noteLabel: bottomNoteData[i].noteLabel,
+frequency: bottomNoteData[i].frequency,
 type: 'bottom',
 left: i / this.totalWidth,
 width: 1 / this.totalWidth,
 top: 0.05,
-height: 0.9, // 调整高度，确保文字能显示出来
-position: bottomNotePositions[i] // 半音位置，0=C4
+height: 0.9
 });
 }
-// 上排键（黑键）：按照真实Stylophone S1 Mid档
-// 1.5:C#4,3.5:D#4,4.5:F#4,6.5:G#4,7.5:A#4,8.5:C#5,10.5:D#5,11.5:F#5
-const topKeyPositions = [
-{start: 0.5, end: 1.5, position: 1, noteName: '1.5', noteLabel: 'C#4'},
-{start: 2.5, end: 3.5, position: 3, noteName: '3.5', noteLabel: 'D#4'},
-{start: 3.5, end: 4.5, position: 6, noteName: '4.5', noteLabel: 'F#4'},
-{start: 5.5, end: 6.5, position: 8, noteName: '6.5', noteLabel: 'G#4'},
-{start: 6.5, end: 7.5, position: 10, noteName: '7.5', noteLabel: 'A#4'},
-{start: 7.5, end: 8.5, position: 13, noteName: '8.5', noteLabel: 'C#5'},
-{start: 9.5, end: 10.5, position: 15, noteName: '10.5', noteLabel: 'D#5'},
-{start: 10.5, end: 11.5, position: 18, noteName: '11.5', noteLabel: 'F#5'}
+// 上排键（黑键）：按照新要求
+const topKeyData = [
+{start: 0.5, end: 1.5, noteName: '1.5', noteLabel: 'A#2', frequency: 116.54},
+{start: 2.5, end: 3.5, noteName: '3.5', noteLabel: 'C#3', frequency: 138.59},
+{start: 3.5, end: 4.5, noteName: '4.5', noteLabel: 'D#3', frequency: 155.56},
+{start: 5.5, end: 6.5, noteName: '6.5', noteLabel: 'F#3', frequency: 185.00},
+{start: 6.5, end: 7.5, noteName: '7.5', noteLabel: 'G#3', frequency: 207.65},
+{start: 7.5, end: 8.5, noteName: '8.5', noteLabel: 'A#3', frequency: 233.08},
+{start: 9.5, end: 10.5, noteName: '10.5', noteLabel: 'C#4', frequency: 277.18},
+{start: 10.5, end: 11.5, noteName: '11.5', noteLabel: 'D#4', frequency: 311.13}
 ];
-for (let i = 0; i < topKeyPositions.length; i++) {
-const key = topKeyPositions[i];
+for (let i = 0; i < topKeyData.length; i++) {
+const key = topKeyData[i];
 const width = (key.end - key.start) / this.totalWidth;
 this.keyPositions.push({
-noteIndex: key.position,
+noteIndex: i + 12,
 noteName: key.noteName,
 noteLabel: key.noteLabel,
+frequency: key.frequency,
 type: 'top',
 left: key.start / this.totalWidth,
 width: width,
 top: 0.05,
-height: 0.5, // 还原到原来的高度
-position: key.position // 音调位置
+height: 0.5
 });
 }
 }
@@ -790,11 +831,14 @@ return baseFreq * Math.pow(2, (position / 12) + this.octave + (this.transpose / 
 getFrequencyByKeyPosition(key, localX) {
 // 以键的基准音高为中心，在键范围内有轻微的线性变化
 // localX: 0-1，0=键左端，1=键右端
-const basePosition = key.position; // 键的基准半音位置
+const baseFreq = key.frequency;
 const variationRange = 1.0; // 每个键内的音高变化范围（+/-0.5个半音）
-const position = basePosition + (localX - 0.5) * variationRange;
-const baseFreq = 261.63; // C4
-return baseFreq * Math.pow(2, (position / 12) + this.octave + (this.transpose / 12));
+const semitoneRatio = Math.pow(2, 1 / 12);
+// 计算变化因子
+const variation = (localX - 0.5) * variationRange;
+const octaveShift = this.octave;
+const transposeShift = this.transpose / 12;
+return baseFreq * Math.pow(semitoneRatio, variation) * Math.pow(2, octaveShift + transposeShift);
 }
  
 setupEventListeners() {
